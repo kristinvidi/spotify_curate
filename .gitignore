@@ -1,0 +1,8 @@
+// System files
+.DS_Store
+
+// VSCode files
+.vscode/
+
+// Excludes all viper config files
+*.toml
