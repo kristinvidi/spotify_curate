@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	apptype "spotify_app/api/pkg/app_type"
 	"spotify_app/api/pkg/model"
 )
@@ -26,13 +27,24 @@ func GetMapOfGenreToCountOfGenre(artists []model.Artist) map[apptype.Genre]int {
 }
 
 func addArtistToMapOfGenre(artist model.Artist, mapGenreToGenreCount map[apptype.Genre][]string) {
-	for _, genre := range artist.Genres {
+	if len(artist.Genres) != 0 {
+		genre := artist.Genres[0]
 		if artists, ok := mapGenreToGenreCount[genre]; ok {
 			mapGenreToGenreCount[genre] = append(artists, artist.Name)
 		} else {
 			mapGenreToGenreCount[genre] = []string{artist.Name}
 		}
+	} else {
+		fmt.Printf("artist %s has no genres!\n", artist.Name)
 	}
+
+	// for _, genre := range artist.Genres {
+	// 	if artists, ok := mapGenreToGenreCount[genre]; ok {
+	// 		mapGenreToGenreCount[genre] = append(artists, artist.Name)
+	// 	} else {
+	// 		mapGenreToGenreCount[genre] = []string{artist.Name}
+	// 	}
+	// }
 }
 
 func GetMapOfGenreToArtists(artists []model.Artist) map[apptype.Genre][]string {

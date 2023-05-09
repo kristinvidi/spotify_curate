@@ -2,6 +2,7 @@ package converter
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -10,13 +11,40 @@ import (
 	"spotify_app/api/pkg/model"
 )
 
+func BuildGetCurrentUsersProfileRequest(accessToken apptype.AccessToken) (*http.Request, error) {
+	url := url.URL{
+		Scheme: constants.URLScheme,
+		Host:   constants.URLHostAPI,
+		Path:   constants.URLPathMe,
+	}
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add(constants.HeaderAuthorization, accessToken.HeaderValue())
+
+	return req, nil
+}
+
+func DecodeGetCurrentUsersProfileResponse(response http.Response) (*model.GetCurrentUsersProfileResponse, error) {
+	var responseModel model.GetCurrentUsersProfileResponse
+	err := json.NewDecoder(response.Body).Decode(&responseModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseModel, nil
+}
+
 func BuildGetFollowedArtistsRequest(accessToken apptype.AccessToken, after *string) (*http.Request, error) {
 	url := url.URL{
 		Scheme: constants.URLScheme,
 		Host:   constants.URLHostAPI,
 		Path:   constants.URLPathFollowing,
 	}
-	url.RawQuery = encodedQueryParameters(after)
+	url.RawQuery = encodedQueryParameters(after, 50)
 
 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
@@ -38,11 +66,11 @@ func DecodeGetFollowedArtistsResponse(response http.Response) (*model.GetFollowe
 	return &decodedResponse, nil
 }
 
-func encodedQueryParameters(after *string) string {
+func encodedQueryParameters(after *string, limit int) string {
 	url := url.URL{}
 	params := url.Query()
 	params.Set(constants.ParameterType, constants.TypeArtist)
-	params.Set(constants.ParameterLimit, "50")
+	params.Set(constants.ParameterLimit, fmt.Sprint(limit))
 
 	if after == nil {
 		return params.Encode()
