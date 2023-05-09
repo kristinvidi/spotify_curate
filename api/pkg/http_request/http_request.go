@@ -3,6 +3,8 @@ package httprequest
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/openlyinc/pointy"
 )
 
 type HttpRequest struct {
@@ -15,13 +17,13 @@ func NewHttpRequest(httpClient *http.Client) HttpRequest {
 	}
 }
 
-func (h *HttpRequest) DoRequestAndCheckStatus(request *http.Request) (*http.Response, error) {
+func (h *HttpRequest) DoRequestAndCheckStatusIsOK(request *http.Request) (*http.Response, error) {
 	response, err := h.httpClient.Do(request)
 	if err != nil {
 		return nil, err
 	}
 
-	err = checkResponseStatus(response)
+	err = checkResponseStatusIsOK(response)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +31,7 @@ func (h *HttpRequest) DoRequestAndCheckStatus(request *http.Request) (*http.Resp
 	return response, nil
 }
 
-func checkResponseStatus(response *http.Response) error {
+func checkResponseStatusIsOK(response *http.Response) error {
 	if response == nil {
 		return fmt.Errorf("cannot infer status for nil response")
 	}
@@ -39,4 +41,25 @@ func checkResponseStatus(response *http.Response) error {
 	}
 
 	return nil
+}
+
+func (h *HttpRequest) CheckResponseStatusIsBadRequest(request *http.Request) (*bool, error) {
+	response, err := h.httpClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return checkResponseStatusIsBadRequest(response)
+}
+
+func checkResponseStatusIsBadRequest(response *http.Response) (*bool, error) {
+	if response == nil {
+		return nil, fmt.Errorf("cannot infer status for nil response")
+	}
+
+	if response.StatusCode != http.StatusBadRequest {
+		return pointy.Bool(false), nil
+	}
+
+	return pointy.Bool(true), nil
 }

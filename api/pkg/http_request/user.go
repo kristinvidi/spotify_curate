@@ -6,6 +6,25 @@ import (
 	"spotify_app/api/pkg/model"
 )
 
+func (h *HttpRequest) GetCurrentUsersProfile(accessToken apptype.AccessToken) (*model.User, error) {
+	request, err := converter.BuildGetCurrentUsersProfileRequest(accessToken)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := h.DoRequestAndCheckStatusIsOK(request)
+	if err != nil {
+		return nil, err
+	}
+
+	userResponse, err := converter.DecodeGetCurrentUsersProfileResponse(*response)
+	if err != nil {
+		return nil, err
+	}
+
+	return userResponse.User(), nil
+}
+
 func (h *HttpRequest) GetFollowedArtists(accessToken apptype.AccessToken) ([]model.Artist, error) {
 	var followedArtists []model.Artist
 	var after *string
@@ -17,7 +36,7 @@ func (h *HttpRequest) GetFollowedArtists(accessToken apptype.AccessToken) ([]mod
 			return nil, err
 		}
 
-		response, err := h.DoRequestAndCheckStatus(request)
+		response, err := h.DoRequestAndCheckStatusIsOK(request)
 		if err != nil {
 			return nil, err
 		}

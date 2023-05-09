@@ -17,6 +17,7 @@ func main() {
 	}
 
 	httpRequest := httprequest.NewHttpRequest(&http.Client{})
+
 	accessToken, err := httpRequest.GetAccessToken(config)
 	if err != nil {
 		panic(err)
@@ -37,3 +38,9 @@ func commaSeparatedStrings(strings []string) string {
 	commaSeparated, _ := json.Marshal(strings)
 	return string(commaSeparated)
 }
+
+// Make an empty access_token.txt file
+// Use httpRequest.GetAccessToken to populate
+// Make request with access token
+// 		If it fails on a specific code (auth token no longer valid), fetch a new one
+//		Otherwise it just works

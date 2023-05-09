@@ -11,6 +11,7 @@ const (
 	URLHostAPI       string = "api.spotify.com"
 	URLPathAuthorize string = "authorize"
 	URLPathToken     string = "api/token"
+	URLPathMe        string = "v1/me"
 	URLPathFollowing string = "v1/me/following"
 )
 
