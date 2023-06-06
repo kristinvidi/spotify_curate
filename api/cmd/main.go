@@ -1,46 +1,64 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"spotify_app/api/config"
-	"spotify_app/api/pkg/data"
+	"spotify_app/api/pkg/constants"
 	httprequest "spotify_app/api/pkg/http_request"
+	"spotify_app/api/pkg/work"
+)
+
+type Workflow int32
+
+const (
+	GetAccessToken Workflow = iota
+	StoreArtistInfo
+	StoreAlbumInfo
+	CreatePlaylistForGenre
 )
 
 func main() {
-	config, err := config.GetEnvironmentVariables()
+	viperConfig, err := config.GetEnvironmentVariables()
 	if err != nil {
 		panic(err)
 	}
 
-	httpRequest := httprequest.NewHttpRequest(&http.Client{})
+	configManager := config.NewManager()
+	httpRequest := httprequest.NewHttpRequest(&http.Client{}, configManager)
 
-	accessToken, err := httpRequest.GetAccessToken(config)
+	accessToken, err := httpRequest.GetAccessToken(viperConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	followedArtists, err := httpRequest.GetFollowedArtists(*accessToken)
+	err = work.StoreUserInfo(httpRequest, *accessToken, configManager)
 	if err != nil {
 		panic(err)
 	}
 
-	mapOfGenreToArtists := data.GetMapOfGenreToArtists(followedArtists)
-	for genre, artists := range mapOfGenreToArtists {
-		fmt.Printf("Genre: %s; Artists: %s\n", genre, commaSeparatedStrings(artists))
+	switch CreatePlaylistForGenre {
+	case GetAccessToken:
+		fmt.Println("Successfully saved access token")
+	case StoreArtistInfo:
+		_, err = work.StoreArtistInfo(httpRequest, *accessToken)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Successfully stored artist info")
+	case CreatePlaylistForGenre:
+		genre := constants.GenreProgressiveTechHouse
+		playlistType := constants.TopTracksForArtistsPlaylist
+
+		err = work.CreatePlaylistForGenre(httpRequest, *accessToken, genre, playlistType)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Successfully created playlist")
+	// case StoreAlbumInfo:
+
+	default:
+		fmt.Println("Did nothing! Method not yet implemented.")
 	}
 }
-
-func commaSeparatedStrings(strings []string) string {
-	commaSeparated, _ := json.Marshal(strings)
-	return string(commaSeparated)
-}
-
-// Make an empty access_token.txt file
-// Use httpRequest.GetAccessToken to populate
-// Make request with access token
-// 		If it fails on a specific code (auth token no longer valid), fetch a new one
-//		Otherwise it just works
