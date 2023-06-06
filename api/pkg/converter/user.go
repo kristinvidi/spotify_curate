@@ -42,9 +42,9 @@ func BuildGetFollowedArtistsRequest(accessToken apptype.AccessToken, after *stri
 	url := url.URL{
 		Scheme: constants.URLScheme,
 		Host:   constants.URLHostAPI,
-		Path:   constants.URLPathFollowing,
+		Path:   constants.URLPathMeFollowing,
 	}
-	url.RawQuery = encodedQueryParameters(after, 50)
+	url.RawQuery = encodedQueryParameters(after, constants.ReplyLimit, nil)
 
 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
@@ -66,11 +66,15 @@ func DecodeGetFollowedArtistsResponse(response http.Response) (*model.GetFollowe
 	return &decodedResponse, nil
 }
 
-func encodedQueryParameters(after *string, limit int) string {
+func encodedQueryParameters(after *string, limit int, countryCode *apptype.UserCountryCode) string {
 	url := url.URL{}
 	params := url.Query()
 	params.Set(constants.ParameterType, constants.TypeArtist)
 	params.Set(constants.ParameterLimit, fmt.Sprint(limit))
+
+	if countryCode != nil {
+		params.Set(constants.ParameterMarket, string(*countryCode))
+	}
 
 	if after == nil {
 		return params.Encode()
@@ -80,3 +84,46 @@ func encodedQueryParameters(after *string, limit int) string {
 
 	return params.Encode()
 }
+
+// func BuildGetArtistAlbumsRequest(accessToken apptype.AccessToken, after *string) (*http.Request, error) {
+// 	url := url.URL{
+// 		Scheme: constants.URLScheme,
+// 		Host:   constants.URLHostAPI,
+// 		Path:   constants.URLPathArtist,
+// 	}
+// 	url.RawQuery = encodedQueryParameters(after, constants.ReplyLimit)
+
+// 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	req.Header.Add(constants.HeaderAuthorization, accessToken.HeaderValue())
+
+// 	return req, nil
+// }
+
+// func DecodeGetArtistAlbumsResponse(response http.Response) (*model.GetFollowedArtistsResponse, error) {
+// 	var decodedResponse model.GetFollowedArtistsResponse
+// 	err := json.NewDecoder(response.Body).Decode(&decodedResponse)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return &decodedResponse, nil
+// }
+
+// func encodedQueryParameters(after *string, limit int) string {
+// 	url := url.URL{}
+// 	params := url.Query()
+// 	params.Set(constants.ParameterType, constants.TypeArtist)
+// 	params.Set(constants.ParameterLimit, fmt.Sprint(limit))
+
+// 	if after == nil {
+// 		return params.Encode()
+// 	}
+
+// 	params.Set(constants.ParameterAfter, *after)
+
+// 	return params.Encode()
+// }

@@ -1,58 +1,28 @@
 package data
 
-import (
-	"fmt"
-	apptype "spotify_app/api/pkg/app_type"
-	"spotify_app/api/pkg/model"
-)
+// import (
+// 	apptype "spotify_app/api/pkg/app_type"
+// 	"spotify_app/api/pkg/model"
+// )
 
-func addGenreCountToMap(genres apptype.Genres, mapGenreToGenreCount map[apptype.Genre]int) {
-	for _, genre := range genres {
-		if count, ok := mapGenreToGenreCount[genre]; ok {
-			mapGenreToGenreCount[genre] = count + 1
-		} else {
-			mapGenreToGenreCount[genre] = 1
-		}
-	}
-}
+// func GetMapOfArtistToGenre(artists []model.Artist) (mapGenreToArtistSlice map[apptype.Genre]model.Artists, artistsWithoutGenres []model.Artist) {
+// 	mapOfArtistToGenre = make(map[apptype.Genre]model.Artists)
+// 	for _, artist := range artists {
+// 		if len(artist.Genres) == 0 {
+// 			artistsWithoutGenres = append(artistsWithoutGenres, artist)
+// 		} else {
+// 			addArtistToMapOfGenre(artist, mapGenreToArtistSlice)
+// 		}
+// 	}
 
-func GetMapOfGenreToCountOfGenre(artists []model.Artist) map[apptype.Genre]int {
-	mapGenreToGenreCount := make(map[apptype.Genre]int)
+// 	return mapGenreToArtistSlice, artistsWithoutGenres
+// }
 
-	for _, artist := range artists {
-		addGenreCountToMap(artist.Genres, mapGenreToGenreCount)
-	}
-
-	return mapGenreToGenreCount
-}
-
-func addArtistToMapOfGenre(artist model.Artist, mapGenreToGenreCount map[apptype.Genre][]string) {
-	if len(artist.Genres) != 0 {
-		genre := artist.Genres[0]
-		if artists, ok := mapGenreToGenreCount[genre]; ok {
-			mapGenreToGenreCount[genre] = append(artists, artist.Name)
-		} else {
-			mapGenreToGenreCount[genre] = []string{artist.Name}
-		}
-	} else {
-		fmt.Printf("artist %s has no genres!\n", artist.Name)
-	}
-
-	// for _, genre := range artist.Genres {
-	// 	if artists, ok := mapGenreToGenreCount[genre]; ok {
-	// 		mapGenreToGenreCount[genre] = append(artists, artist.Name)
-	// 	} else {
-	// 		mapGenreToGenreCount[genre] = []string{artist.Name}
-	// 	}
-	// }
-}
-
-func GetMapOfGenreToArtists(artists []model.Artist) map[apptype.Genre][]string {
-	mapGenreToArtistSlice := make(map[apptype.Genre][]string)
-
-	for _, artist := range artists {
-		addArtistToMapOfGenre(artist, mapGenreToArtistSlice)
-	}
-
-	return mapGenreToArtistSlice
-}
+// func addArtistToMapOfGenre(artist model.Artist, mapGenreToGenreCount map[apptype.Genre]model.Artists) {
+// 	genre := artist.Genres[0]
+// 	if artists, ok := mapGenreToGenreCount[genre]; ok {
+// 		mapGenreToGenreCount[genre] = append(artists, artist)
+// 	} else {
+// 		mapGenreToGenreCount[genre] = model.Artists{artist}
+// 	}
+// }

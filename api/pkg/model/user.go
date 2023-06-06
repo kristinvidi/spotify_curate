@@ -1,9 +1,14 @@
 package model
 
+import (
+	apptype "spotify_app/api/pkg/app_type"
+)
+
 type User struct {
 	DisplayName string
 	Email       string
-	ID          string
+	ID          apptype.UserID
+	Country     apptype.UserCountryCode
 }
 
 type GetCurrentUsersProfileResponse struct {
@@ -33,7 +38,8 @@ func (g *GetCurrentUsersProfileResponse) User() *User {
 	return &User{
 		DisplayName: g.DisplayName,
 		Email:       g.Email,
-		ID:          g.ID,
+		ID:          apptype.UserID(g.ID),
+		Country:     apptype.UserCountryCode(g.Country),
 	}
 }
 

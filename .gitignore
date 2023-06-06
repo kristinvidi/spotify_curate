@@ -6,3 +6,9 @@
 
 // Excludes all viper config files
 *.toml
+
+// Excludes all data stores
+*.json
+
+// Excluedes all environment files
+*.txt
