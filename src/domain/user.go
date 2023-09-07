@@ -2,10 +2,8 @@ package domain
 
 import (
 	"src/config"
-	"src/db/connection"
-	"src/db/query"
-	mapperapi "src/domain/mapper_api"
-	mapperdb "src/domain/mapper_db"
+	"src/db"
+	"src/domain/mapper"
 	"src/spotifyapi"
 )
 
@@ -19,17 +17,14 @@ func NewUser(config *config.Config) *User {
 
 func (u *User) GetAndStoreCurrentUsersProfile() error {
 	api := spotifyapi.GetUser(u.config)
-	profile, err := api.GetCurrentUsersProfile()
+	response, err := api.GetCurrentUsersProfile()
 	if err != nil {
 		return err
 	}
 
-	user := mapperdb.UserToDBUser(
-		mapperapi.UserFromCurrentUsersProfileResponse(profile),
-	)
+	user := mapper.DBUserFromCurrentUsersProfileResponse(response)
 
-	dbConnection := connection.GetConnection(u.config.Database)
-	dbUser := query.NewUser(dbConnection)
+	dbUser := db.GetUser(u.config.Database)
 
 	err = dbUser.InsertUserData(*user)
 	if err != nil {
