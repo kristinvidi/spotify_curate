@@ -1,0 +1,8 @@
+case: underscore
+inpackage: False
+keeptree: True
+outpkg: mocks
+output: ./mocks
+recursive: True
+testonly: False
+with-expecter: True

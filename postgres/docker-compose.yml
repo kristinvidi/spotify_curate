@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  spotify_db:
+    image: postgres:latest
+    container_name: spotify_db
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+#     image: postgres:latest
+#     container_name: spotify_db
+#     # restart: always
+#     # secrets:
+#     #   - spotify_db_username
+#     #   - spotify_db_password
+#     #   - spotify_db_name
+#     # environment:
+#     #   POSTGRES_DB: spotify_db_name
+#     #   POSTGRES_USER: spotify_db_username
+#     #   POSTGRES_PASSWORD: spotify_db_password
+#     environment:
+#       POSTGRES_PASSWORD: test
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+# 
+  # spotify_db_liquibase:
+  #   image: liquibase/liquibase:latest
+  #   container_name: spotify_db_liquibase
+  #   # restart: always
+  #   depends_on:
+  #     - spotify_db
+  #   command: 
+  #     - --url=jdbc:postgresql://postgres:5432/your_database_name
+  #     - --username=your_username
+  #     - --password=your_password
+  #     - --changeLogFile=/liquibase/changelog.yml
+  #   volumes:
+  #     - ./liquibase:/liquibase

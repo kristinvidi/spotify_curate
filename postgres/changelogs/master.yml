@@ -1,0 +1,7 @@
+# Tracks all changelogs!
+
+databaseChangeLog:
+  - logicalFilePath: master.yml
+  - include:
+      file: 2023-08/main.yml
+      relativeToChangelogFile: true
