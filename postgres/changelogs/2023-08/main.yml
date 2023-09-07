@@ -1,0 +1,46 @@
+# 2023-08
+
+databaseChangeLog:
+  - logicalFilePath: main.yml
+  - changeSet:
+      id: adding-user-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_id
+              - column:
+                  name: spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: uri
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: display_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: country
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
