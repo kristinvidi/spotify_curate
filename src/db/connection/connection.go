@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
@@ -18,15 +19,16 @@ type PostgresDB struct {
 	logger logrus.FieldLogger
 }
 
-func NewPostgresDB(db bun.IDB, logger logrus.FieldLogger) *PostgresDB {
+func NewPostgresDB(dbConfig config.DB, logger logrus.FieldLogger) *PostgresDB {
+	db := getConnection(dbConfig)
+
 	return &PostgresDB{db: db, logger: logger}
 }
 
-func GetConnection(dbConfig config.DB) *bun.DB {
+func getConnection(dbConfig config.DB) *bun.DB {
 	dsn := "postgres://postgres:@localhost:5432/test?sslmode=disable"
 
 	connection := pgdriver.NewConnector(
-		// pgdriver.WithAddr(dbConfig.Host+":"+dbConfig.Port),
 		pgdriver.WithDSN(dsn),
 		pgdriver.WithDatabase(dbConfig.Database),
 		pgdriver.WithUser(dbConfig.User),
@@ -38,4 +40,10 @@ func GetConnection(dbConfig config.DB) *bun.DB {
 	db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 
 	return db
+}
+
+func (p *PostgresDB) Insert(m interface{}) error {
+	_, err := p.db.NewInsert().Model(m).Exec(context.Background())
+
+	return err
 }

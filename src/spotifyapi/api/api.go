@@ -16,6 +16,8 @@ import (
 	"src/spotifyapi/model"
 )
 
+const delay = time.Second
+
 type API struct {
 	httpClient   *client.Http
 	config       *config.Config
@@ -71,7 +73,7 @@ func (a *API) executeRequest(requestBuilder func(accessToken model.AccessToken) 
 			return nil
 		},
 		retry.Attempts(3),
-		retry.Delay(5*time.Second),
+		retry.Delay(delay),
 	)
 
 	return resp, retryErr
@@ -169,7 +171,7 @@ func (a *API) executeAccessTokenRequest(req *http.Request) (*http.Response, erro
 			return nil
 		},
 		retry.Attempts(3),
-		retry.Delay(5*time.Second),
+		retry.Delay(delay),
 	)
 
 	return resp, retryErr

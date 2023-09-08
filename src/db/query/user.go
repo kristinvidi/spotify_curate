@@ -1,37 +1,18 @@
 package query
 
 import (
-	"context"
+	"src/db/connection"
 	"src/db/model"
-
-	"github.com/uptrace/bun"
 )
 
 type User struct {
-	db *bun.DB
+	db *connection.PostgresDB
 }
 
-func NewUser(db *bun.DB) *User {
+func NewUser(db *connection.PostgresDB) *User {
 	return &User{db: db}
 }
 
 func (u *User) InsertUserData(user model.User) error {
-	ctx := context.Background()
-	_, err := u.db.NewInsert().Model(&user).Exec(ctx)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (u *User) GetUser(id int64) (*model.User, error) {
-	ctx := context.Background()
-	var user model.User
-	err := u.db.NewSelect().Model(&user).Where("id = ?", id).Scan(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &user, nil
+	return u.db.Insert(&user)
 }
