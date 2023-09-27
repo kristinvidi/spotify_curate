@@ -28,12 +28,12 @@ func NewAPI(httpClient *client.Http, config *config.Config, tokenStorage *authen
 	return &API{httpClient: httpClient, config: config, tokenStorage: tokenStorage}
 }
 
-func (a *API) DoRequest(requestBuilder func(accessToken model.AccessToken) (*http.Request, error)) (*http.Response, error) {
+func (a *API) DoRequest(requestBuilder func(accessToken model.AccessToken, inputs *model.RequestInput) (*http.Request, error), inputs *model.RequestInput) (*http.Response, error) {
 	if a.config == nil {
 		return nil, constants.ErrMissingConfig
 	}
 
-	resp, err := a.executeRequest(requestBuilder)
+	resp, err := a.executeRequest(requestBuilder, inputs)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (a *API) DoRequest(requestBuilder func(accessToken model.AccessToken) (*htt
 	return resp, nil
 }
 
-func (a *API) executeRequest(requestBuilder func(accessToken model.AccessToken) (*http.Request, error)) (*http.Response, error) {
+func (a *API) executeRequest(requestBuilder func(accessToken model.AccessToken, inputs *model.RequestInput) (*http.Request, error), inputs *model.RequestInput) (*http.Response, error) {
 	var resp *http.Response
 	retryErr := retry.Do(
 		func() error {
@@ -52,7 +52,7 @@ func (a *API) executeRequest(requestBuilder func(accessToken model.AccessToken) 
 			}
 
 			// Build the request using the access token
-			req, err := requestBuilder(*storedToken)
+			req, err := requestBuilder(*storedToken, inputs)
 			if err != nil {
 				return err
 			}

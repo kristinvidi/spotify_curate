@@ -15,7 +15,7 @@ func NewUser() *User {
 	return &User{}
 }
 
-func (u *User) BuildCurrentUsersProfileRequest(accessToken model.AccessToken) (*http.Request, error) {
+func (u *User) BuildCurrentUsersProfileRequest(accessToken model.AccessToken, inputs *model.RequestInput) (*http.Request, error) {
 	url := url.URL{
 		Scheme: constants.URLScheme,
 		Host:   constants.URLHostAPI,
@@ -40,4 +40,47 @@ func (u *User) DecodeCurrentUsersProfileResponse(response http.Response) (*model
 	}
 
 	return &responseModel, nil
+}
+
+func (u *User) BuildGetFollowedArtistsRequest(accessToken model.AccessToken, inputs *model.RequestInput) (*http.Request, error) {
+	url := url.URL{
+		Scheme: constants.URLScheme,
+		Host:   constants.URLHostAPI,
+		Path:   constants.URLPathMeFollowing,
+	}
+	url.RawQuery = u.encodedQueryParameters(*inputs)
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add(constants.HeaderAuthorization, accessToken.HeaderValue())
+
+	return req, nil
+}
+
+func (u *User) DecodeGetFollowedArtistsResponse(response http.Response) (*model.GetFollowedArtistsResponse, error) {
+	var decodedResponse model.GetFollowedArtistsResponse
+	err := json.NewDecoder(response.Body).Decode(&decodedResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &decodedResponse, nil
+}
+
+func (u *User) encodedQueryParameters(inputs model.RequestInput) string {
+	url := url.URL{}
+	params := url.Query()
+	params.Set(constants.ParameterType, constants.TypeArtist)
+	params.Set(constants.ParameterLimit, *inputs.BatchSize())
+
+	if inputs.After() == nil {
+		return params.Encode()
+	}
+
+	params.Set(constants.ParameterAfter, *inputs.After())
+
+	return params.Encode()
 }

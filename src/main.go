@@ -2,7 +2,7 @@ package main
 
 import (
 	"src/config"
-	"src/domain"
+	"src/domain/update"
 )
 
 func main() {
@@ -11,8 +11,8 @@ func main() {
 		panic(err)
 	}
 
-	user := domain.NewUser(config)
-	err = user.GetAndStoreCurrentUsersProfile()
+	user := update.NewUserData(config)
+	err = user.UpdateAllUserData()
 	if err != nil {
 		panic(err)
 	}

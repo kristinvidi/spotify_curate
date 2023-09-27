@@ -1,0 +1,70 @@
+# 2023-09
+
+databaseChangeLog:
+  - logicalFilePath: main.yml
+  - changeSet:
+      id: adding-artist-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: artist
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_artist_id
+              - column:
+                  name: spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: uri
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: adding-user_artist_spotify_id_mapping-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user_artist_spotify_id_mapping
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_artist_spotify_id_mapping_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: artist_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: unique_user_artist_spotify_id_mapping
+            tableName: user_artist_spotify_id_mapping
+            columnNames: user_spotify_id, artist_spotify_id

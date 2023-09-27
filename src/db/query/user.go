@@ -1,18 +1,14 @@
 package query
 
 import (
-	"src/db/connection"
+	"src/db/constants"
 	"src/db/model"
 )
 
-type User struct {
-	db *connection.PostgresDB
+func (p *PostgresDB) InsertUserData(user model.User) error {
+	return p.insert(&user, constants.ColumnSpotifyID, constants.OnConflictDoNothing)
 }
 
-func NewUser(db *connection.PostgresDB) *User {
-	return &User{db: db}
-}
-
-func (u *User) InsertUserData(user model.User) error {
-	return u.db.Insert(&user)
+func (p *PostgresDB) InsertUserToArtistSpotifyIDMappings(mappings []model.UserArtistSpotifyIDMapping) error {
+	return p.insert(&mappings, constants.ColumnUserArtistSpotifyID, constants.OnConflictDoNothing)
 }
