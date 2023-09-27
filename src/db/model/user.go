@@ -11,3 +11,10 @@ type User struct {
 	Email       string `bun:"email"`
 	Country     string `bun:"country"`
 }
+
+type UserArtistSpotifyIDMapping struct {
+	bun.BaseModel `bun:"table:user_artist_spotify_id_mapping"`
+
+	UserID   string `bun:"user_spotify_id"`
+	ArtistID string `bun:"artist_spotify_id"`
+}
