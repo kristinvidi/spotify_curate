@@ -9,11 +9,13 @@ const (
 	URLScheme                  string = "https"
 	URLHostAccounts            string = "accounts.spotify.com"
 	URLHostAPI                 string = "api.spotify.com"
+	URLVersion                 string = "v1"
 	URLPathAuthorize           string = "authorize"
 	URLPathToken               string = "api/token"
 	URLPathMe                  string = "v1/me"
 	URLPathMeFollowing         string = "v1/me/following"
 	URLPathTrack               string = "v1/tracks"
+	URLPathAlbums              string = "v1/albums"
 	URLPathArtist              string = "v1/artists"
 	URLPathUsers               string = "v1/users"
 	URLPathPlaylists           string = "v1/playlists"
@@ -29,16 +31,11 @@ const (
 	ParameterLimit  string = "limit"
 	ParameterAfter  string = "after"
 	ParameterMarket string = "market"
+	ParameterOffset string = "offset"
 )
 
 const (
 	TypeArtist string = "artist"
-)
-
-const (
-	MarketES string = "ES"
-)
-
-const (
-	ReplyLimit int = 50
+	TypeTracks string = "tracks"
+	TypeAlbums string = "albums"
 )

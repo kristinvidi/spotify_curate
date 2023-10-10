@@ -4,8 +4,8 @@
 source .env
 
 # Run the Liquibase update command
-liquibase --changeLogFile=${CHANGELOG_FILE} --url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} update
+# liquibase --changeLogFile=${CHANGELOG_FILE} --url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} update
 
 
 # Rollback!!
-# liquibase --changeLogFile=${CHANGELOG_FILE} --url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} rollbackToDate "2021-01-01"
+# liquibase --changeLogFile=${CHANGELOG_FILE} --url=jdbc:postgresql://localhost:5432/${POSTGRES_DB} --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} rollbackToDate "2023-06-01"

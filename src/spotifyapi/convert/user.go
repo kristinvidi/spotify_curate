@@ -48,7 +48,7 @@ func (u *User) BuildGetFollowedArtistsRequest(accessToken model.AccessToken, inp
 		Host:   constants.URLHostAPI,
 		Path:   constants.URLPathMeFollowing,
 	}
-	url.RawQuery = u.encodedQueryParameters(*inputs)
+	url.RawQuery = u.encodeArtistTypeAndLimit(*inputs)
 
 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
@@ -70,9 +70,10 @@ func (u *User) DecodeGetFollowedArtistsResponse(response http.Response) (*model.
 	return &decodedResponse, nil
 }
 
-func (u *User) encodedQueryParameters(inputs model.RequestInput) string {
+func (u *User) encodeArtistTypeAndLimit(inputs model.RequestInput) string {
 	url := url.URL{}
 	params := url.Query()
+
 	params.Set(constants.ParameterType, constants.TypeArtist)
 	params.Set(constants.ParameterLimit, *inputs.BatchSize())
 
