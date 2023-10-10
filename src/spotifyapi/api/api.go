@@ -70,6 +70,11 @@ func (a *API) executeRequest(requestBuilder func(accessToken model.AccessToken, 
 				return err
 			}
 
+			// If response is nil and error is nil, return missing response error
+			if resp == nil && err == nil {
+				return constants.ErrMissingResponse
+			}
+
 			return nil
 		},
 		retry.Attempts(3),

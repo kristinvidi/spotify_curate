@@ -32,6 +32,7 @@ func UserToDBUser(user *model.User) *db.User {
 		ID:          string(user.ID),
 		URI:         string(user.URI),
 		Country:     string(user.Country),
+		CreatedAt:   time.Now(),
 	}
 }
 
@@ -45,8 +46,9 @@ func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, respon
 
 		for _, a := range r.Artists.ArtistList {
 			mapping := db.UserArtistSpotifyIDMapping{
-				UserID:   string(userID),
-				ArtistID: string(a.ID),
+				UserID:    string(userID),
+				ArtistID:  string(a.ID),
+				CreatedAt: time.Now(),
 			}
 
 			dbUserArtistSpotifyIDMappings = append(dbUserArtistSpotifyIDMappings, mapping)
@@ -54,6 +56,20 @@ func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, respon
 	}
 
 	return dbUserArtistSpotifyIDMappings
+}
+
+func APIArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtistsResponse) api.Artists {
+	var artists api.Artists
+
+	for _, r := range response {
+		if r == nil {
+			continue
+		}
+
+		artists = append(artists, r.Artists.ArtistList...)
+	}
+
+	return artists
 }
 
 func DBFollowedArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtistsResponse) []db.Artist {

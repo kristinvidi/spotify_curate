@@ -1,13 +1,13 @@
-# 2023-08
+# 2023-10
 
 databaseChangeLog:
   - logicalFilePath: main.yml
   - changeSet:
-      id: adding-user-table
+      id: adding-album-table
       author: kvidi
       changes:
         - createTable:
-            tableName: user
+            tableName: album
             columns:
               - column:
                   name: id
@@ -16,7 +16,7 @@ databaseChangeLog:
                     autoIncrement: true
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_user_id
+                    primaryKeyName: pk_album_id
               - column:
                   name: spotify_id
                   type: varchar(50)
@@ -30,20 +30,16 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: display_name
-                  type: varchar(50)
+                  name: name
+                  type: varchar(200)
                   constraints:
                     nullable: false
               - column:
-                  name: email
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
+                  name: release_date
+                  type: timestamp
               - column:
-                  name: country
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
+                  name: release_date_precision
+                  type: varchar(6)
               - column:
                   name: created_at
                   type: timestamp

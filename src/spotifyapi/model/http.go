@@ -3,20 +3,32 @@ package model
 import "fmt"
 
 type RequestInput struct {
+	spotifyID *string
 	after     *string
+	offset    *int
 	batchSize *int
 }
 
-func NewRequestInput(after *string, batchSize *int) *RequestInput {
-	return &RequestInput{after: after, batchSize: batchSize}
+func NewRequestInput(spotifyID, after *string, offset, batchSize *int) *RequestInput {
+	return &RequestInput{spotifyID: spotifyID, after: after, offset: offset, batchSize: batchSize}
+}
+
+func (r *RequestInput) SpotifyID() *string {
+	return r.spotifyID
 }
 
 func (r *RequestInput) After() *string {
-	if r.after == nil {
+	return r.after
+}
+
+func (r *RequestInput) Offset() *string {
+	if r.offset == nil {
 		return nil
 	}
 
-	return r.after
+	offset := fmt.Sprintf("%d", *r.offset)
+
+	return &offset
 }
 
 func (r *RequestInput) BatchSize() *string {

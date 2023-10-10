@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"src/config"
 	"src/domain/update"
 )
@@ -14,6 +15,6 @@ func main() {
 	user := update.NewUserData(config)
 	err = user.UpdateAllUserData()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }

@@ -24,7 +24,7 @@ func NewUserData(config *config.Config) *UserData {
 }
 
 func (u *UserData) UpdateAllUserData() error {
-	user, err := u.getCurrentUserProfile()
+	user, err := u.getAndStoreCurrentUserProfile()
 	if err != nil {
 		return err
 	}
@@ -34,23 +34,32 @@ func (u *UserData) UpdateAllUserData() error {
 		return err
 	}
 
-	// Insert user data
-	mappedUser := mapper.UserToDBUser(user)
-	err = u.db.InsertUserData(*mappedUser)
-	if err != nil {
-		return err
-	}
-
 	// Insert artist data
-	mappedArtists := mapper.DBFollowedArtistsFromGetFollowedArtistsResponse(responses)
-	err = u.db.InsertArtistData(mappedArtists)
+	err = u.db.InsertArtistData(
+		mapper.DBFollowedArtistsFromGetFollowedArtistsResponse(responses),
+	)
 	if err != nil {
 		return err
 	}
 
 	// Insert user to artist mapping data
-	userToArtistMapping := mapper.DBUserToArtistMappingFromGetFollowedArtistsResponse(user.ID, responses)
-	err = u.db.InsertUserToArtistSpotifyIDMappings(userToArtistMapping)
+	err = u.db.InsertUserToArtistSpotifyIDMappings(
+		mapper.DBUserToArtistMappingFromGetFollowedArtistsResponse(user.ID, responses),
+	)
+	if err != nil {
+		return err
+	}
+
+	allAlbums, err := u.userAPI.GetCurrentUsersFollowedArtistsAlbums(
+		mapper.APIArtistsFromGetFollowedArtistsResponse(responses),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = u.db.InsertAlbums(
+		mapper.DBAAbumsFromGetArtistsAlbumsResponse(allAlbums),
+	)
 	if err != nil {
 		return err
 	}
@@ -58,11 +67,20 @@ func (u *UserData) UpdateAllUserData() error {
 	return nil
 }
 
-func (u *UserData) getCurrentUserProfile() (*model.User, error) {
+func (u *UserData) getAndStoreCurrentUserProfile() (*model.User, error) {
 	response, err := u.userAPI.GetCurrentUsersProfile()
 	if err != nil {
 		return nil, err
 	}
 
-	return mapper.UserFromCurrentUsersProfileResponse(response), nil
+	user := mapper.UserFromCurrentUsersProfileResponse(response)
+
+	err = u.db.InsertUserData(
+		*mapper.UserToDBUser(user),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
