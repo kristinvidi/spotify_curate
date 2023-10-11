@@ -70,3 +70,78 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
+  - changeSet:
+      id: adding-user_spotify_id_genre_mapping-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user_spotify_id_genre_mapping
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_spotify_id_genre_mapping_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_spotify_id_genre_mapping_user_spotify_id
+                    referencedTableName: user
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: genre
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: unique_user_spotify_id_genre_mapping_user_spotify_id_genre
+            tableName: user_genre_mapping
+            columnNames: user_spotify_id, genre
+  - changeSet:
+      id: adding-user_artist_spotify_id_genre_mapping-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user_artist_spotify_id_genre_mapping
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_artist_spotify_id_genre_mapping_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_genre_mapping_user_spotify_id
+                    referencedTableName: user
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: artist_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_genre_mapping_artist_spotify_id
+                    referencedTableName: artist
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: genre_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_genre_mapping_genre_id
+                    referencedTableName: user_spotify_id_genre_mapping
+                    referencedColumnNames: id
+        - addUniqueConstraint:
+            constraintName: unique_user_spotify_id_genre_mapping_user_artist_spotify_id_genre_id
+            tableName: user_artist_genre_mapping
+            columnNames: user_spotify_id, artist_spotify_id, genre_id

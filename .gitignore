@@ -12,3 +12,6 @@
 
 // Excluedes all environment files
 *.txt
+
+// Schema roll-back
+rollback_schema.sh

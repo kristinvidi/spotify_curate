@@ -59,17 +59,23 @@ databaseChangeLog:
                   type: varchar(50)
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_mapping_user_spotify_id
+                    referencedTableName: user
+                    referencedColumnNames: spotify_id
               - column:
                   name: artist_spotify_id
                   type: varchar(50)
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_mapping_artist_spotify_id
+                    referencedTableName: artist
+                    referencedColumnNames: spotify_id
               - column:
                   name: created_at
                   type: timestamp
                   constraints:
                     nullable: false
         - addUniqueConstraint:
-            constraintName: unique_user_artist_spotify_id_mapping
+            constraintName: unique_user_artist_spotify_id_mapping_user_artist_spotify_id
             tableName: user_artist_spotify_id_mapping
             columnNames: user_spotify_id, artist_spotify_id
