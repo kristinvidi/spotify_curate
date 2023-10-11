@@ -64,6 +64,13 @@ func (u *UserData) UpdateAllUserData() error {
 		return err
 	}
 
+	err = u.db.InsertUserUpdateStatus(
+		mapper.UserUpdateStatus(user.ID),
+	)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
