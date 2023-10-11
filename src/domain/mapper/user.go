@@ -94,3 +94,10 @@ func DBFollowedArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowed
 
 	return dbArtists
 }
+
+func UserUpdateStatus(userID model.ID) db.UserUpdateStatus {
+	return db.UserUpdateStatus{
+		UserID:    string(userID),
+		UpdatedAt: time.Now(),
+	}
+}

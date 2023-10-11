@@ -24,3 +24,10 @@ type UserArtistSpotifyIDMapping struct {
 	ArtistID  string    `bun:"artist_spotify_id"`
 	CreatedAt time.Time `bun:",notnull"`
 }
+
+type UserUpdateStatus struct {
+	bun.BaseModel `bun:"table:user_update_status"`
+
+	UserID    string    `bun:"user_spotify_id"`
+	UpdatedAt time.Time `bun:",notnull"`
+}

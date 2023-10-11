@@ -21,9 +21,15 @@ func NewPostgresDB(dbConfig config.DB) *PostgresDB {
 	return &PostgresDB{db: db}
 }
 
-func (p *PostgresDB) insert(m interface{}, conflictConstraint constants.Column, conflictCommand constants.OnConflict) error {
+func (p *PostgresDB) insertWithConflict(m interface{}, conflictConstraint constants.Column, conflictCommand constants.OnConflict) error {
 	conflictClause := fmt.Sprintf("CONFLICT (%s) %s", conflictConstraint, conflictCommand)
 	_, err := p.db.NewInsert().Model(m).On(conflictClause).Exec(context.Background())
+
+	return err
+}
+
+func (p *PostgresDB) insertNoConflict(m interface{}) error {
+	_, err := p.db.NewInsert().Model(m).Exec(context.Background())
 
 	return err
 }
