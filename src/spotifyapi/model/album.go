@@ -5,8 +5,8 @@ import (
 )
 
 type Album struct {
-	SpotifyID string    `json:"id"`
-	URI       string    `json:"uri"`
+	ID        ID        `json:"id"`
+	URI       URI       `json:"uri"`
 	Name      string    `json:"name"`
 	AlbumType AlbumType `json:"album_type"`
 	Genres    []string  `json:"genres"`

@@ -6,15 +6,15 @@ import (
 )
 
 func (p *PostgresDB) InsertUserData(user model.User) error {
-	return p.insertWithConflict(&user, constants.ColumnSpotifyID, constants.OnConflictDoNothing)
+	return p.insertWithConflict(&user, constants.ColumnID, constants.OnConflictDoNothing)
 }
 
-func (p *PostgresDB) InsertUserToArtistSpotifyIDMappings(mappings []model.UserArtistSpotifyIDMapping) error {
-	return p.insertWithConflict(&mappings, constants.ColumnUserArtistSpotifyID, constants.OnConflictDoNothing)
+func (p *PostgresDB) InsertUserToArtistIDMappings(mappings []model.UserArtistIDMapping) error {
+	return p.insertWithConflict(&mappings, constants.ColumnUserArtistID, constants.OnConflictDoNothing)
 }
 
 func (p *PostgresDB) InsertAlbums(albums model.Albums) error {
-	return p.insertWithConflict(&albums, constants.ColumnSpotifyID, constants.OnConflictDoNothing)
+	return p.insertWithConflict(&albums, constants.ColumnID, constants.OnConflictDoNothing)
 }
 
 func (p *PostgresDB) InsertUserUpdateStatus(status model.UserUpdateStatus) error {

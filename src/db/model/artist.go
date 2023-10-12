@@ -7,11 +7,10 @@ import (
 )
 
 type Artist struct {
-	bun.BaseModel `bun:"table:artist"`
+	bun.BaseModel `bun:"table:spotify_artist"`
 
-	ID        *int64    `bun:"id"`
-	SpotifyID string    `bun:"spotify_id"`
-	URI       string    `bun:"uri"`
-	Name      string    `bun:"name"`
-	CreatedAt time.Time `bun:"created_at"`
+	ID        ID        `bun:"spotify_id,unique,notnull"`
+	URI       URI       `bun:"uri,unique,notnull"`
+	Name      string    `bun:"display_name,notnull"`
+	CreatedAt time.Time `bun:"created_at,notnull"`
 }

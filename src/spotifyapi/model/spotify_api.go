@@ -1,8 +1,8 @@
 package model
 
-type SpotifyID string
+type ID string
 
-func (s SpotifyID) String() string {
+func (s ID) String() string {
 	return string(s)
 }
 

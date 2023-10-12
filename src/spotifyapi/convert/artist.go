@@ -19,7 +19,7 @@ func (a *Artist) BuildGetArtistsAlbumsRequest(accessToken model.AccessToken, inp
 	url := url.URL{
 		Scheme: constants.URLScheme,
 		Host:   constants.URLHostAPI,
-		Path:   path.Join(constants.URLPathArtist, *inputs.SpotifyID(), constants.TypeAlbums),
+		Path:   path.Join(constants.URLPathArtist, *inputs.IDString(), constants.TypeAlbums),
 	}
 	url.RawQuery = a.encodeLimitAndOffset(*inputs)
 

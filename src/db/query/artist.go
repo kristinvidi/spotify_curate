@@ -6,5 +6,5 @@ import (
 )
 
 func (p *PostgresDB) InsertArtistData(artists []model.Artist) error {
-	return p.insertWithConflict(&artists, constants.ColumnSpotifyID, constants.OnConflictDoNothing)
+	return p.insertWithConflict(&artists, constants.ColumnID, constants.OnConflictDoNothing)
 }

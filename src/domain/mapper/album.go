@@ -11,28 +11,30 @@ func DBAAbumsFromGetArtistsAlbumsResponse(responses []*api.GetArtistsAlbumsRespo
 	var albums db.Albums
 	for _, r := range responses {
 		if r != nil {
-			albums = append(albums, DBAlbumsFromAPIAlbums(r.Albums)...)
+			albums = append(albums, dbAlbumsFromAPIAlbums(r.Albums)...)
 		}
 	}
 
 	return albums
 }
 
-func DBAlbumsFromAPIAlbums(albums api.Albums) db.Albums {
+func dbAlbumsFromAPIAlbums(albums api.Albums) db.Albums {
 	dbAlbums := make(db.Albums, len(albums))
 
 	for i, a := range albums {
-		album := db.Album{
-			SpotifyID:            a.SpotifyID,
-			URI:                  a.URI,
-			Name:                 a.Name,
-			ReleaseDate:          a.ReleaseDate(),
-			ReleaseDatePrecision: db.ReleaseDatePrecision(a.ReleaseDatePrecision),
-			CreatedAt:            time.Now(),
-		}
-
-		dbAlbums[i] = album
+		dbAlbums[i] = dbAlbumFromAPIAlbum(a)
 	}
 
 	return dbAlbums
+}
+
+func dbAlbumFromAPIAlbum(album api.Album) db.Album {
+	return db.Album{
+		ID:                   db.ID(album.ID),
+		URI:                  db.URI(album.URI),
+		Name:                 album.Name,
+		ReleaseDate:          album.ReleaseDate(),
+		ReleaseDatePrecision: db.ReleaseDatePrecision(album.ReleaseDatePrecision),
+		CreatedAt:            time.Now(),
+	}
 }

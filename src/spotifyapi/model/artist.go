@@ -1,10 +1,10 @@
 package model
 
 type Artist struct {
-	URI    URI       `json:"uri"`
-	ID     SpotifyID `json:"id"`
-	Name   string    `json:"name"`
-	Genres []string  `json:"genres"`
+	URI    URI      `json:"uri"`
+	ID     ID       `json:"id"`
+	Name   string   `json:"name"`
+	Genres []string `json:"genres"`
 }
 
 type Artists []Artist
