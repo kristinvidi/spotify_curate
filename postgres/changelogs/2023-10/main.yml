@@ -65,6 +65,9 @@ databaseChangeLog:
                   type: varchar(50)
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_update_status_user_spotify_id
+                    referencedTableName: spotify_user
+                    referencedColumnNames: spotify_id
               - column:
                   name: updated_at
                   type: timestamp
@@ -91,7 +94,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_user_spotify_id_genre_mapping_user_spotify_id
-                    referencedTableName: user
+                    referencedTableName: spotify_user
                     referencedColumnNames: spotify_id
               - column:
                   name: genre
@@ -100,7 +103,7 @@ databaseChangeLog:
                     nullable: false
         - addUniqueConstraint:
             constraintName: unique_user_spotify_id_genre_mapping_user_spotify_id_genre
-            tableName: user_genre_mapping
+            tableName: user_spotify_id_genre_mapping
             columnNames: user_spotify_id, genre
   - changeSet:
       id: adding-user_artist_spotify_id_genre_mapping-table
@@ -123,7 +126,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_user_artist_spotify_id_genre_mapping_user_spotify_id
-                    referencedTableName: user
+                    referencedTableName: spotify_user
                     referencedColumnNames: spotify_id
               - column:
                   name: artist_spotify_id
@@ -143,5 +146,5 @@ databaseChangeLog:
                     referencedColumnNames: id
         - addUniqueConstraint:
             constraintName: unique_user_spotify_id_genre_mapping_user_artist_spotify_id_genre_id
-            tableName: user_artist_genre_mapping
+            tableName: user_artist_spotify_id_genre_mapping
             columnNames: user_spotify_id, artist_spotify_id, genre_id

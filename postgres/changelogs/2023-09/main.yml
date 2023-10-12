@@ -60,7 +60,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_user_artist_spotify_id_mapping_user_spotify_id
-                    referencedTableName: user
+                    referencedTableName: spotify_user
                     referencedColumnNames: spotify_id
               - column:
                   name: artist_spotify_id
