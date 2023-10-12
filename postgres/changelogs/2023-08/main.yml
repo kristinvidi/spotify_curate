@@ -10,19 +10,13 @@ databaseChangeLog:
             tableName: spotify_user
             columns:
               - column:
-                  name: id
-                  type: bigserial
-                  constraints:
-                    autoIncrement: true
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_spotify_user_id
-              - column:
                   name: spotify_id
                   type: varchar(50)
                   constraints:
                     nullable: false
                     unique: true
+                    primaryKey: true
+                    primaryKeyName: pk_spotify_user_id
               - column:
                   name: uri
                   type: varchar(50)

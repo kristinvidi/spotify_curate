@@ -3,26 +3,20 @@
 databaseChangeLog:
   - logicalFilePath: main.yml
   - changeSet:
-      id: adding-artist-table
+      id: adding-spotify_artist-table
       author: kvidi
       changes:
         - createTable:
-            tableName: artist
+            tableName: spotify_artist
             columns:
-              - column:
-                  name: id
-                  type: bigserial
-                  constraints:
-                    autoIncrement: true
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_artist_id
               - column:
                   name: spotify_id
                   type: varchar(50)
                   constraints:
                     nullable: false
                     unique: true
+                    primaryKey: true
+                    primaryKeyName: pk_spotify_artist_id
               - column:
                   name: uri
                   type: varchar(50)
@@ -30,7 +24,7 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: name
+                  name: display_name
                   type: varchar(50)
                   constraints:
                     nullable: false
@@ -68,7 +62,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_user_artist_spotify_id_mapping_artist_spotify_id
-                    referencedTableName: artist
+                    referencedTableName: spotify_artist
                     referencedColumnNames: spotify_id
               - column:
                   name: created_at

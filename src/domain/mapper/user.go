@@ -13,11 +13,11 @@ func UserFromCurrentUsersProfileResponse(response *api.GetCurrentUsersProfileRes
 	}
 
 	return &model.User{
-		DisplayName: model.Name(response.DisplayName),
-		Email:       model.Email(response.Email),
-		ID:          model.ID(response.ID),
-		URI:         model.URI(response.URI),
-		Country:     model.CountryCode(response.Country),
+		Name:    string(response.DisplayName),
+		Email:   string(response.Email),
+		ID:      model.ID(response.ID),
+		URI:     model.URI(response.URI),
+		Country: string(response.Country),
 	}
 }
 
@@ -27,17 +27,17 @@ func UserToDBUser(user *model.User) *db.User {
 	}
 
 	return &db.User{
-		DisplayName: string(user.DisplayName),
-		Email:       string(user.Email),
-		ID:          string(user.ID),
-		URI:         string(user.URI),
-		Country:     string(user.Country),
-		CreatedAt:   time.Now(),
+		Name:      string(user.Name),
+		Email:     string(user.Email),
+		ID:        db.ID(user.ID),
+		URI:       db.URI(user.URI),
+		Country:   string(user.Country),
+		CreatedAt: time.Now(),
 	}
 }
 
-func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, response []*api.GetFollowedArtistsResponse) []db.UserArtistSpotifyIDMapping {
-	var dbUserArtistSpotifyIDMappings []db.UserArtistSpotifyIDMapping
+func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, response []*api.GetFollowedArtistsResponse) []db.UserArtistIDMapping {
+	var dbUserArtistIDMappings []db.UserArtistIDMapping
 
 	for _, r := range response {
 		if r == nil {
@@ -45,17 +45,19 @@ func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, respon
 		}
 
 		for _, a := range r.Artists.ArtistList {
-			mapping := db.UserArtistSpotifyIDMapping{
-				UserID:    string(userID),
-				ArtistID:  string(a.ID),
-				CreatedAt: time.Now(),
-			}
-
-			dbUserArtistSpotifyIDMappings = append(dbUserArtistSpotifyIDMappings, mapping)
+			dbUserArtistIDMappings = append(dbUserArtistIDMappings, dbUserArtistIDMappingFromUserIDAndAPIArtist(userID, a))
 		}
 	}
 
-	return dbUserArtistSpotifyIDMappings
+	return dbUserArtistIDMappings
+}
+
+func dbUserArtistIDMappingFromUserIDAndAPIArtist(userID model.ID, artist api.Artist) db.UserArtistIDMapping {
+	return db.UserArtistIDMapping{
+		UserID:    db.ID(userID),
+		ArtistID:  db.ID(artist.ID),
+		CreatedAt: time.Now(),
+	}
 }
 
 func APIArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtistsResponse) api.Artists {
@@ -81,23 +83,25 @@ func DBFollowedArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowed
 		}
 
 		for _, a := range r.Artists.ArtistList {
-			dbArtist := db.Artist{
-				SpotifyID: string(a.ID),
-				URI:       string(a.URI),
-				Name:      string(a.Name),
-				CreatedAt: time.Now(),
-			}
-
-			dbArtists = append(dbArtists, dbArtist)
+			dbArtists = append(dbArtists, dbArtistFromAPIArtist(a))
 		}
 	}
 
 	return dbArtists
 }
 
+func dbArtistFromAPIArtist(artist api.Artist) db.Artist {
+	return db.Artist{
+		ID:        db.ID(artist.ID),
+		URI:       db.URI(artist.URI),
+		Name:      string(artist.Name),
+		CreatedAt: time.Now(),
+	}
+}
+
 func UserUpdateStatus(userID model.ID) db.UserUpdateStatus {
 	return db.UserUpdateStatus{
-		UserID:    string(userID),
+		UserID:    db.ID(userID),
 		UpdatedAt: time.Now(),
 	}
 }

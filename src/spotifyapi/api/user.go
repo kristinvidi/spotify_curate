@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"src/spotifyapi/convert"
 	"src/spotifyapi/model"
 
@@ -73,8 +72,7 @@ func (u *User) GetCurrentUsersFollowedArtists() ([]*model.GetFollowedArtistsResp
 func (u *User) GetCurrentUsersFollowedArtistsAlbums(artists model.Artists) ([]*model.GetArtistsAlbumsResponse, error) {
 	var responses []*model.GetArtistsAlbumsResponse
 
-	for i, a := range artists {
-		fmt.Printf("getting albums for index %d of %d - %s\n", i, len(artists), a.Name)
+	for _, a := range artists {
 		responsesForArtist, err := u.getArtistsAlbumsForArtist(a)
 		if err != nil {
 			return nil, err
@@ -89,13 +87,12 @@ func (u *User) GetCurrentUsersFollowedArtistsAlbums(artists model.Artists) ([]*m
 func (u *User) getArtistsAlbumsForArtist(artist model.Artist) ([]*model.GetArtistsAlbumsResponse, error) {
 	var responses []*model.GetArtistsAlbumsResponse
 
-	artistID := artist.ID.String()
 	offset := 0
 	albumLen := 0
 	total := 1
 	batchSize := 50
 	for albumLen < total {
-		inputs := model.NewRequestInput(&artistID, nil, &offset, &batchSize)
+		inputs := model.NewRequestInput(&artist.ID, nil, &offset, &batchSize)
 		response, err := u.api.DoRequest(u.artistConverter.BuildGetArtistsAlbumsRequest, inputs)
 		if err != nil {
 			return nil, err

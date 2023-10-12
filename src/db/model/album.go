@@ -7,11 +7,11 @@ import (
 )
 
 type Album struct {
-	bun.BaseModel `bun:"table:album"`
+	bun.BaseModel `bun:"table:spotify_album"`
 
-	SpotifyID            string `bun:",unique,notnull"`
-	URI                  string `bun:",unique,notnull"`
-	Name                 string `bun:",notnull"`
+	ID                   ID     `bun:"spotify_id,unique,notnull"`
+	URI                  URI    `bun:"uri,unique,notnull"`
+	Name                 string `bun:"display_name,notnull"`
 	ReleaseDate          time.Time
 	ReleaseDatePrecision ReleaseDatePrecision
 	CreatedAt            time.Time `bun:",notnull"`

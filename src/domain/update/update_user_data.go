@@ -43,7 +43,7 @@ func (u *UserData) UpdateAllUserData() error {
 	}
 
 	// Insert user to artist mapping data
-	err = u.db.InsertUserToArtistSpotifyIDMappings(
+	err = u.db.InsertUserToArtistIDMappings(
 		mapper.DBUserToArtistMappingFromGetFollowedArtistsResponse(user.ID, responses),
 	)
 	if err != nil {

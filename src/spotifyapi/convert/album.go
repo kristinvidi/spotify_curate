@@ -18,7 +18,7 @@ func (a *Album) BuildGetAlbumTracksRequest(accessToken model.AccessToken, inputs
 	url := url.URL{
 		Scheme: constants.URLScheme,
 		Host:   constants.URLHostAPI,
-		Path:   path.Join(constants.URLPathAlbums, *inputs.SpotifyID(), constants.TypeTracks),
+		Path:   path.Join(constants.URLPathAlbums, *inputs.IDString(), constants.TypeTracks),
 	}
 
 	req, err := http.NewRequest(http.MethodGet, url.String(), nil)

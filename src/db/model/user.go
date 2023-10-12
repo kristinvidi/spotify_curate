@@ -7,27 +7,19 @@ import (
 )
 
 type User struct {
-	bun.BaseModel `bun:"table:user"`
+	bun.BaseModel `bun:"table:spotify_user"`
 
-	ID          string    `bun:"spotify_id"`
-	URI         string    `bun:"uri"`
-	DisplayName string    `bun:"display_name"`
-	Email       string    `bun:"email"`
-	Country     string    `bun:"country"`
-	CreatedAt   time.Time `bun:",notnull"`
-}
-
-type UserArtistSpotifyIDMapping struct {
-	bun.BaseModel `bun:"table:user_artist_spotify_id_mapping"`
-
-	UserID    string    `bun:"user_spotify_id"`
-	ArtistID  string    `bun:"artist_spotify_id"`
+	ID        ID        `bun:"spotify_id,unique,notnull"`
+	URI       URI       `bun:"uri,unique,notnull"`
+	Name      string    `bun:"display_name,notnull"`
+	Email     string    `bun:",notnull"`
+	Country   string    `bun:",notnull"`
 	CreatedAt time.Time `bun:",notnull"`
 }
 
 type UserUpdateStatus struct {
 	bun.BaseModel `bun:"table:user_update_status"`
 
-	UserID    string    `bun:"user_spotify_id"`
+	UserID    ID        `bun:"user_spotify_id,notnull"`
 	UpdatedAt time.Time `bun:",notnull"`
 }
