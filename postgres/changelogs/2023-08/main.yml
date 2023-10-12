@@ -3,11 +3,11 @@
 databaseChangeLog:
   - logicalFilePath: main.yml
   - changeSet:
-      id: adding-user-table
+      id: adding-spotify_user-table
       author: kvidi
       changes:
         - createTable:
-            tableName: user
+            tableName: spotify_user
             columns:
               - column:
                   name: id
@@ -16,7 +16,7 @@ databaseChangeLog:
                     autoIncrement: true
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_user_id
+                    primaryKeyName: pk_spotify_user_id
               - column:
                   name: spotify_id
                   type: varchar(50)
