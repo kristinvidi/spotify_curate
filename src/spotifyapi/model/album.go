@@ -26,3 +26,9 @@ func (a Album) ReleaseDate() time.Time {
 }
 
 type Albums []Album
+
+type GetAlbumTracksResponse struct {
+	Limit  int               `json:"limit"`
+	Total  int               `json:"total"`
+	Tracks []SimplifiedTrack `json:"items"`
+}

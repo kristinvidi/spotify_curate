@@ -36,6 +36,15 @@ func UserToDBUser(user *model.User) *db.User {
 	}
 }
 
+func DBUserToAPIUserID(user *db.User) *api.ID {
+	if user == nil {
+		return nil
+	}
+
+	id := api.ID(user.ID)
+	return &id
+}
+
 func DBUserToArtistMappingFromGetFollowedArtistsResponse(userID model.ID, response []*api.GetFollowedArtistsResponse) []db.UserArtistIDMapping {
 	var dbUserArtistIDMappings []db.UserArtistIDMapping
 

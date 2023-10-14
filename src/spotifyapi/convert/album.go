@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"path"
@@ -29,4 +30,14 @@ func (a *Album) BuildGetAlbumTracksRequest(accessToken model.AccessToken, inputs
 	req.Header.Add(constants.HeaderAuthorization, accessToken.HeaderValue())
 
 	return req, nil
+}
+
+func (a *Album) DecodeGetAlbumTracksResponse(response http.Response) (*model.GetAlbumTracksResponse, error) {
+	var decodedResponse model.GetAlbumTracksResponse
+	err := json.NewDecoder(response.Body).Decode(&decodedResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &decodedResponse, nil
 }

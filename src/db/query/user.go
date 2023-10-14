@@ -17,6 +17,10 @@ func (p *PostgresDB) InsertAlbums(albums model.Albums) error {
 	return p.insertWithConflict(&albums, constants.ColumnID, constants.OnConflictDoNothing)
 }
 
+func (p *PostgresDB) InsertArtistAlbumIDMappings(mappings model.ArtistAlbumIDMappings) error {
+	return p.insertWithConflict(&mappings, constants.ColumnArtistAlbumID, constants.OnConflictDoNothing)
+}
+
 func (p *PostgresDB) InsertUserUpdateStatus(status model.UserUpdateStatus) error {
 	return p.insertNoConflict(&status)
 }

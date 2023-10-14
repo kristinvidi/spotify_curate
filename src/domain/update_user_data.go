@@ -1,4 +1,4 @@
-package update
+package domain
 
 import (
 	"src/config"
@@ -9,21 +9,21 @@ import (
 	"src/spotifyapi/api"
 )
 
-type UserData struct {
+type UserUpdater struct {
 	config  *config.Config
 	userAPI *api.User
 	db      *query.PostgresDB
 }
 
-func NewUserData(config *config.Config) *UserData {
-	return &UserData{
+func NewUserUpdater(config *config.Config) *UserUpdater {
+	return &UserUpdater{
 		config:  config,
 		userAPI: spotifyapi.GetUser(config),
 		db:      query.NewPostgresDB(config.Database),
 	}
 }
 
-func (u *UserData) UpdateAllUserData() error {
+func (u *UserUpdater) UpdateUserData() error {
 	user, err := u.getAndStoreCurrentUserProfile()
 	if err != nil {
 		return err
@@ -50,16 +50,21 @@ func (u *UserData) UpdateAllUserData() error {
 		return err
 	}
 
-	allAlbums, err := u.userAPI.GetCurrentUsersFollowedArtistsAlbums(
+	artistIDToAlbumsResponses, err := u.userAPI.GetCurrentUsersFollowedArtistsToAlbums(
 		mapper.APIArtistsFromGetFollowedArtistsResponse(responses),
 	)
 	if err != nil {
 		return err
 	}
 
-	err = u.db.InsertAlbums(
-		mapper.DBAAbumsFromGetArtistsAlbumsResponse(allAlbums),
-	)
+	albums, artistToAlbumMappings := mapper.DBAAbumsAndArtistMappingFromGetArtistsAlbumsResponse(artistIDToAlbumsResponses)
+
+	err = u.db.InsertAlbums(albums)
+	if err != nil {
+		return err
+	}
+
+	err = u.db.InsertArtistAlbumIDMappings(artistToAlbumMappings)
 	if err != nil {
 		return err
 	}
@@ -74,7 +79,7 @@ func (u *UserData) UpdateAllUserData() error {
 	return nil
 }
 
-func (u *UserData) getAndStoreCurrentUserProfile() (*model.User, error) {
+func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
 	response, err := u.userAPI.GetCurrentUsersProfile()
 	if err != nil {
 		return nil, err

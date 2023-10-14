@@ -142,3 +142,38 @@ databaseChangeLog:
             constraintName: unique_user_spotify_id_genre_mapping_user_artist_spotify_id_genre_id
             tableName: user_artist_spotify_id_genre_mapping
             columnNames: user_spotify_id, artist_spotify_id, genre_id
+  - changeSet:
+      id: adding-artist_album_spotify_id_mapping-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: artist_album_spotify_id_mapping
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_artist_album_spotify_id_mapping_id
+              - column:
+                  name: artist_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_artist_album_spotify_id_mapping_artist_spotify_id
+                    referencedTableName: spotify_artist
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: album_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_artist_album_spotify_id_mapping_album_spotify_id
+                    referencedTableName: spotify_album
+                    referencedColumnNames: spotify_id
+        - addUniqueConstraint:
+            constraintName: unique_artist_album_spotify_id_mapping_artist_album_spotify_id
+            tableName: artist_album_spotify_id_mapping
+            columnNames: artist_spotify_id, album_spotify_id
