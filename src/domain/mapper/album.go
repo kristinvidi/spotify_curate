@@ -7,25 +7,24 @@ import (
 	api "src/spotifyapi/model"
 )
 
-func DBAAbumsFromGetArtistsAlbumsResponse(responses []*api.GetArtistsAlbumsResponse) db.Albums {
+func DBAAbumsAndArtistMappingFromGetArtistsAlbumsResponse(artistIDToAlbumsResponses map[api.ID][]*api.GetArtistsAlbumsResponse) (db.Albums, db.ArtistAlbumIDMappings) {
 	var albums db.Albums
-	for _, r := range responses {
-		if r != nil {
-			albums = append(albums, dbAlbumsFromAPIAlbums(r.Albums)...)
+	var mappings db.ArtistAlbumIDMappings
+
+	for id, responses := range artistIDToAlbumsResponses {
+		for _, r := range responses {
+			if r != nil {
+				for _, a := range r.Albums {
+					album := dbAlbumFromAPIAlbum(a)
+					mapping := artistMappingFromAPIArtistAndAlbum(id, a)
+					albums = append(albums, album)
+					mappings = append(mappings, mapping)
+				}
+			}
 		}
 	}
 
-	return albums
-}
-
-func dbAlbumsFromAPIAlbums(albums api.Albums) db.Albums {
-	dbAlbums := make(db.Albums, len(albums))
-
-	for i, a := range albums {
-		dbAlbums[i] = dbAlbumFromAPIAlbum(a)
-	}
-
-	return dbAlbums
+	return albums, mappings
 }
 
 func dbAlbumFromAPIAlbum(album api.Album) db.Album {
@@ -36,5 +35,12 @@ func dbAlbumFromAPIAlbum(album api.Album) db.Album {
 		ReleaseDate:          album.ReleaseDate(),
 		ReleaseDatePrecision: db.ReleaseDatePrecision(album.ReleaseDatePrecision),
 		CreatedAt:            time.Now(),
+	}
+}
+
+func artistMappingFromAPIArtistAndAlbum(artistID api.ID, album api.Album) db.ArtistAlbumIDMapping {
+	return db.ArtistAlbumIDMapping{
+		ArtistID: db.ID(artistID),
+		AlbumID:  db.ID(album.ID),
 	}
 }

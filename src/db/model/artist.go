@@ -14,3 +14,5 @@ type Artist struct {
 	Name      string    `bun:"display_name,notnull"`
 	CreatedAt time.Time `bun:"created_at,notnull"`
 }
+
+type Artists []Artist

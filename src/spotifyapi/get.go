@@ -22,3 +22,17 @@ func GetArtist(c *config.Config) *api.Artist {
 		convert.NewArtist(),
 	)
 }
+
+func GetAlbum(c *config.Config) *api.Album {
+	return api.NewAlbum(
+		api.NewAPI(client.NewHttp(), c, authentication.NewAccessTokenStorage()),
+		convert.NewAlbum(),
+	)
+}
+
+func GetPlaylist(c *config.Config) *api.Playlist {
+	return api.NewPlaylist(
+		api.NewAPI(client.NewHttp(), c, authentication.NewAccessTokenStorage()),
+		convert.NewPlaylist(),
+	)
+}

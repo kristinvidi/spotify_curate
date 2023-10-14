@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"src/spotifyapi/convert"
 	"src/spotifyapi/model"
 
@@ -40,7 +41,7 @@ func (u *User) GetCurrentUsersFollowedArtists() ([]*model.GetFollowedArtistsResp
 	total := 1
 	batchSize := 50
 	for artistLen < total {
-		inputs := model.NewRequestInput(nil, after, nil, &batchSize)
+		inputs := model.NewRequestInput(nil, nil, after, nil, &batchSize, nil)
 		response, err := u.api.DoRequest(u.userConverter.BuildGetFollowedArtistsRequest, inputs)
 		if err != nil {
 			return nil, err
@@ -69,19 +70,20 @@ func (u *User) GetCurrentUsersFollowedArtists() ([]*model.GetFollowedArtistsResp
 	return responses, nil
 }
 
-func (u *User) GetCurrentUsersFollowedArtistsAlbums(artists model.Artists) ([]*model.GetArtistsAlbumsResponse, error) {
-	var responses []*model.GetArtistsAlbumsResponse
+func (u *User) GetCurrentUsersFollowedArtistsToAlbums(artists model.Artists) (map[model.ID][]*model.GetArtistsAlbumsResponse, error) {
+	idToResponses := make(map[model.ID][]*model.GetArtistsAlbumsResponse)
 
-	for _, a := range artists {
+	for i, a := range artists {
+		fmt.Printf("%d of %d\n", i, len(artists))
 		responsesForArtist, err := u.getArtistsAlbumsForArtist(a)
 		if err != nil {
 			return nil, err
 		}
 
-		responses = append(responsesForArtist, responses...)
+		idToResponses[a.ID] = responsesForArtist
 	}
 
-	return responses, nil
+	return idToResponses, nil
 }
 
 func (u *User) getArtistsAlbumsForArtist(artist model.Artist) ([]*model.GetArtistsAlbumsResponse, error) {
@@ -92,7 +94,7 @@ func (u *User) getArtistsAlbumsForArtist(artist model.Artist) ([]*model.GetArtis
 	total := 1
 	batchSize := 50
 	for albumLen < total {
-		inputs := model.NewRequestInput(&artist.ID, nil, &offset, &batchSize)
+		inputs := model.NewRequestInput(&artist.ID, nil, nil, &offset, &batchSize, nil)
 		response, err := u.api.DoRequest(u.artistConverter.BuildGetArtistsAlbumsRequest, inputs)
 		if err != nil {
 			return nil, err
