@@ -9,8 +9,8 @@ import (
 type Job int32
 
 const (
-	UPDATE_USER_DATA                Job = 0
-	CREATE_PLAYLIST_RECENT_IN_GENRE Job = 1
+	UPDATE_USER_DATA Job = iota
+	CREATE_PLAYLIST_RECENT_IN_GENRE
 )
 
 func main() {
