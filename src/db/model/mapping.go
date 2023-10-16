@@ -17,6 +17,7 @@ type UserArtistIDMapping struct {
 type UserIDGenreMapping struct {
 	bun.BaseModel `bun:"table:user_spotify_id_genre_mapping"`
 
+	ID     int32 `bun:"id,pk,autoincrement"`
 	UserID ID    `bun:"user_spotify_id,notnull"`
 	Genre  Genre `bun:",notnull"`
 }

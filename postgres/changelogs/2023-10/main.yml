@@ -177,3 +177,39 @@ databaseChangeLog:
             constraintName: unique_artist_album_spotify_id_mapping_artist_album_spotify_id
             tableName: artist_album_spotify_id_mapping
             columnNames: artist_spotify_id, album_spotify_id
+  - changeSet:
+      id: adding-playlist_recent_in_genre_generated_status-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: playlist_recent_in_genre_generated_status
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_playlist_recent_in_genre_generated_status_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_genre_mapping_user_spotify_id
+                    referencedTableName: spotify_user
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: genre_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_artist_spotify_id_genre_mapping_genre_id
+                    referencedTableName: user_spotify_id_genre_mapping
+                    referencedColumnNames: id
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false

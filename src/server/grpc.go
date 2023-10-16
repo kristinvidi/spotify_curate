@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"src/config"
 	"src/domain"
-	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -37,13 +36,13 @@ func (g *GrpcServer) UpdateUserData() error {
 	return nil
 }
 
-func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string, relativeDate time.Time) error {
+func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
 	api := "create_recent_in_genre"
 	fmt.Printf("calling api: %s\n", api)
 
 	creator := domain.NewPlaylistCreator(g.config)
 
-	err := creator.CreateRecentInGenre(genre, relativeDate)
+	err := creator.CreateRecentInGenre(genre)
 	if err != nil {
 		return err
 	}
