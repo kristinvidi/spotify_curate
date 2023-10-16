@@ -4,6 +4,7 @@ import (
 	"src/config"
 	"src/db/query"
 	"src/domain/mapper"
+	"src/domain/model"
 	"src/spotifyapi"
 	"src/spotifyapi/api"
 	"time"
@@ -27,18 +28,36 @@ func NewPlaylistCreator(config *config.Config) *PlaylistCreator {
 	}
 }
 
-func (p *PlaylistCreator) CreateRecentInGenre(genre string, relativeDate time.Time) error {
+func (p *PlaylistCreator) CreateRecentInGenre(genre string) error {
 	response, err := p.userAPI.GetCurrentUsersProfile()
 	if err != nil {
 		return err
 	}
 
-	user := mapper.UserToDBUser(mapper.UserFromCurrentUsersProfileResponse(response))
+	user := mapper.UserFromCurrentUsersProfileResponse(response)
+	dbUser := mapper.UserToDBUser(user)
 
-	// Get albumIDs created after relative date
-	albumIDs, err := p.db.GetAlbumIDsForGenreAfterDate(user.ID, mapper.StringToDBGenre(genre), relativeDate)
+	// See if Genre is mapped
+	genreMapping, err := p.db.GetGenreMappingForUserAndGenre(dbUser.ID, mapper.StringToDBGenre(genre))
 	if err != nil {
 		return err
+	}
+
+	// Fetch date that a playlist was last created, if it exists!
+	lastCreatedDate, err := p.getRelativeDateForNewPlaylistInGenre(*user, genre)
+	if err != nil {
+		return err
+	}
+
+	// Get albumIDs created after relative date
+	albumIDs, err := p.db.GetAlbumIDsForGenreAfterDate(dbUser.ID, mapper.StringToDBGenre(genre), *lastCreatedDate)
+	if err != nil {
+		return err
+	}
+
+	if len(albumIDs) == 0 {
+		// log a message saying nothing was generated
+		return nil
 	}
 
 	// Get tracks for albums
@@ -50,8 +69,8 @@ func (p *PlaylistCreator) CreateRecentInGenre(genre string, relativeDate time.Ti
 	trackURIs := mapper.TrackAPIURIsFromGetAlbumTracksResponses(trackResponses)
 
 	// Create playlist
-	playlistName := "Curate: Recent " + genre + " (from " + relativeDate.Format("2006-01-02") + ")"
-	playlistResponse, err := p.playlistAPI.CreatePlaylist(*mapper.DBUserToAPIUserID(user), playlistName, false, false, "")
+	playlistName := p.playlistNameForRecentInGenre(genre, *lastCreatedDate)
+	playlistResponse, err := p.playlistAPI.CreatePlaylist(*mapper.DBUserToAPIUserID(dbUser), playlistName, false, false, "")
 	if err != nil {
 		return err
 	}
@@ -62,5 +81,36 @@ func (p *PlaylistCreator) CreateRecentInGenre(genre string, relativeDate time.Ti
 		return err
 	}
 
+	// Update db with newly created playlist
+	err = p.db.InsertPlaylistRecentInGenreGeneratedStatus(
+		mapper.DBPlaylistRecentInGenreGeneratedStatus(dbUser.ID, genreMapping.ID),
+	)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (p *PlaylistCreator) getRelativeDateForNewPlaylistInGenre(user model.User, genre string) (*time.Time, error) {
+	// To not overwhelm the user, we'll only go back as far as 4 months max
+	earliestDate := time.Now().AddDate(0, -2, 0)
+
+	// Fetch the db last created date
+	lastCreatedDate, err := p.db.GetLastCreatedAtDateForPlaylistOfGenre(mapper.IDToDBID(user.ID), mapper.StringToDBGenre(genre))
+	if err != nil {
+		return nil, err
+	}
+
+	// If the playlist genre does not have a last created date or if it's prior to earlistDate, use earliestDate
+	if lastCreatedDate == nil || lastCreatedDate.Before(earliestDate) {
+		return &earliestDate, nil
+	}
+
+	// Otherwise return the last created date!
+	return lastCreatedDate, nil
+}
+
+func (p *PlaylistCreator) playlistNameForRecentInGenre(genre string, lastCreatedDate time.Time) string {
+	return "Curate: Recent " + genre + " (from " + lastCreatedDate.Format("2006-01-02") + ")"
 }

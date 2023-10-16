@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"src/config"
 	"src/server"
-	"time"
 )
 
 type Job int32
@@ -29,9 +28,8 @@ func main() {
 		err = grpcServer.UpdateUserData()
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE:
-		genre := "Psytech"
-		relativeDate := time.Now().AddDate(0, -2, 0)
-		err = grpcServer.CreatePlaylistRecentInGenre(genre, relativeDate)
+		genre := "Minimal Techno"
+		err = grpcServer.CreatePlaylistRecentInGenre(genre)
 	}
 
 	if err != nil {
