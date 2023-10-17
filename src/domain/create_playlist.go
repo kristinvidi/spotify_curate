@@ -28,10 +28,10 @@ func NewPlaylistCreator(config *config.Config) *PlaylistCreator {
 	}
 }
 
-func (p *PlaylistCreator) CreateRecentInGenre(genre string) error {
+func (p *PlaylistCreator) CreateRecentInGenre(genre string) (bool, error) {
 	response, err := p.userAPI.GetCurrentUsersProfile()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	user := mapper.UserFromCurrentUsersProfileResponse(response)
@@ -40,30 +40,30 @@ func (p *PlaylistCreator) CreateRecentInGenre(genre string) error {
 	// See if Genre is mapped
 	genreMapping, err := p.db.GetGenreMappingForUserAndGenre(dbUser.ID, mapper.StringToDBGenre(genre))
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Fetch date that a playlist was last created, if it exists!
 	lastCreatedDate, err := p.getRelativeDateForNewPlaylistInGenre(*user, genre)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Get albumIDs created after relative date
 	albumIDs, err := p.db.GetAlbumIDsForGenreAfterDate(dbUser.ID, mapper.StringToDBGenre(genre), *lastCreatedDate)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	if len(albumIDs) == 0 {
 		// log a message saying nothing was generated
-		return nil
+		return false, nil
 	}
 
 	// Get tracks for albums
 	trackResponses, err := p.albumAPI.GetAlbumTracks(mapper.DBIDsToAPIIDs(albumIDs))
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	trackURIs := mapper.TrackAPIURIsFromGetAlbumTracksResponses(trackResponses)
@@ -72,13 +72,13 @@ func (p *PlaylistCreator) CreateRecentInGenre(genre string) error {
 	playlistName := p.playlistNameForRecentInGenre(genre, *lastCreatedDate)
 	playlistResponse, err := p.playlistAPI.CreatePlaylist(*mapper.DBUserToAPIUserID(dbUser), playlistName, false, false, "")
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Add tracks to playlist
 	_, err = p.playlistAPI.AddTracksToPlaylist(playlistResponse.ID, trackURIs)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Update db with newly created playlist
@@ -86,10 +86,10 @@ func (p *PlaylistCreator) CreateRecentInGenre(genre string) error {
 		mapper.DBPlaylistRecentInGenreGeneratedStatus(dbUser.ID, genreMapping.ID),
 	)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	return true, nil
 }
 
 func (p *PlaylistCreator) getRelativeDateForNewPlaylistInGenre(user model.User, genre string) (*time.Time, error) {

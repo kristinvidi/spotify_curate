@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"src/config"
 	"src/server"
+
+	"go.uber.org/zap"
 )
 
 type Job int32
@@ -19,7 +21,15 @@ func main() {
 		panic(err)
 	}
 
-	grpcServer := server.NewGrpcServer(config, nil)
+	logger := zap.Must(zap.NewDevelopment())
+	if config.AppEnv.Env == "production" {
+		logger = zap.Must(zap.NewProduction())
+	}
+	defer logger.Sync()
+
+	logger.Info("Starting Curate!")
+
+	grpcServer := server.NewGrpcServer(config, logger)
 
 	job := CREATE_PLAYLIST_RECENT_IN_GENRE
 
@@ -36,18 +46,3 @@ func main() {
 		fmt.Println(err)
 	}
 }
-
-// func createFormattedFieldLogger(fields logrus.Fields) *logrus.Logger {
-// 	logger := logrus.Logger{
-// 		Out:   os.Stderr,
-// 		Level: logrus.GetLevel(),
-// 		Formatter: &easy.Formatter{
-// 			LogFormat:       "%thread% %time% [%lvl%] %msg%",
-// 			TimestampFormat: logTimeFormat,
-// 		},
-// 	}
-
-// 	fieldLogger := logger.WithFields(fields)
-
-// 	return fieldLogger
-// }

@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+type AppEnv struct {
+	Env string `mapstructure:"env"`
+}
+
 type AppClientInformation struct {
 	ClientID     string `mapstructure:"client_id"`
 	ClientSecret string `mapstructure:"client_secret"`
@@ -29,7 +33,8 @@ type DB struct {
 }
 
 type Config struct {
-	App            AppClientInformation `mapstructure:"app_client_information"`
+	AppEnv         AppEnv               `mapstructure:"app_env"`
+	AppClientInfo  AppClientInformation `mapstructure:"app_client_information"`
 	Authentication Authentication       `mapstructure:"authentication"`
 	Database       DB                   `mapstructure:"db"`
 }
