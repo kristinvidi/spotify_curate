@@ -32,6 +32,7 @@ func dbAlbumFromAPIAlbum(album api.Album) db.Album {
 		ID:                   db.ID(album.ID),
 		URI:                  db.URI(album.URI),
 		Name:                 album.Name,
+		Type:                 db.AlbumType(album.AlbumType),
 		ReleaseDate:          album.ReleaseDate(),
 		ReleaseDatePrecision: db.ReleaseDatePrecision(album.ReleaseDatePrecision),
 		CreatedAt:            time.Now(),

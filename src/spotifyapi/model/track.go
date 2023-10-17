@@ -13,6 +13,7 @@ type Track struct {
 type Tracks []Track
 
 type SimplifiedTrack struct {
-	ID  ID  `json:"id"`
-	URI URI `json:"uri"`
+	Name string `json:"name"`
+	ID   ID     `json:"id"`
+	URI  URI    `json:"uri"`
 }
