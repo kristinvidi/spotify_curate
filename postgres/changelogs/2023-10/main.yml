@@ -29,6 +29,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: album_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
                   name: release_date
                   type: timestamp
               - column:

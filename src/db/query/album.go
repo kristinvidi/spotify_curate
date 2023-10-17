@@ -19,6 +19,7 @@ func (p *PostgresDB) GetAlbumIDsForGenreAfterDate(userID model.ID, genre model.G
 		Where("u.spotify_id = ?", userID).
 		Where("usigm.genre = ?", genre).
 		Where("a.release_date > ?", model.FormatPostgresTime(afterDate, model.TimeFormatPostgresDate)).
+		Where("a.album_type != 'compilation'").
 		Scan(context.Background())
 
 	return albumIDs, err

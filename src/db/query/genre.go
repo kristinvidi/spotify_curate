@@ -26,3 +26,18 @@ func (p *PostgresDB) GetGenreMappingForUserAndGenre(userID model.ID, genre model
 
 	return &genreMapping, err
 }
+
+func (p *PostgresDB) GetGenreMappingsForUser(userID model.ID) ([]model.UserIDGenreMapping, error) {
+	var genreMappings []model.UserIDGenreMapping
+
+	err := p.db.NewSelect().
+		Model(&genreMappings).
+		Where("user_spotify_id = ?", userID).
+		Scan(context.Background())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return genreMappings, nil
+}

@@ -36,7 +36,7 @@ func (g *GrpcServer) UpdateUserData() error {
 }
 
 func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
-	api := "create_recent_in_genre"
+	api := "create_playlist_recent_in_genre"
 	g.logger.Info("calling api", zap.String("api", api))
 
 	creator := domain.NewPlaylistCreator(g.config)
@@ -52,6 +52,23 @@ func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
 	}
 
 	g.logger.Info("successfully created recent in genre playlist", zap.String("genre", genre))
+
+	return nil
+}
+
+func (g *GrpcServer) CreatePlaylistRecentInGenreAll() error {
+	api := "create_playlist_recent_in_genre_all"
+	g.logger.Info("calling api", zap.String("api", api))
+
+	creator := domain.NewPlaylistCreator(g.config)
+
+	count, err := creator.CreateRecentInGenreAll()
+	if err != nil {
+		g.logger.Error("failure occured while creating recent in genre playlists for mapped genres", zap.Error(err), zap.Int("playlistsCreated", count))
+		return err
+	}
+
+	g.logger.Info("successfully created recent in genre playlists for mapped genres", zap.Int("playlistCount", count))
 
 	return nil
 }

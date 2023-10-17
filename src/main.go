@@ -13,6 +13,7 @@ type Job int32
 const (
 	UPDATE_USER_DATA Job = iota
 	CREATE_PLAYLIST_RECENT_IN_GENRE
+	CREATE_PLAYLIST_RECENT_IN_GENRE_ALL
 )
 
 func main() {
@@ -31,15 +32,18 @@ func main() {
 
 	grpcServer := server.NewGrpcServer(config, logger)
 
-	job := CREATE_PLAYLIST_RECENT_IN_GENRE
+	job := CREATE_PLAYLIST_RECENT_IN_GENRE_ALL
 
 	switch job {
 	case UPDATE_USER_DATA:
 		err = grpcServer.UpdateUserData()
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE:
-		genre := "Minimal Techno"
+		genre := "Tech House"
 		err = grpcServer.CreatePlaylistRecentInGenre(genre)
+
+	case CREATE_PLAYLIST_RECENT_IN_GENRE_ALL:
+		err = grpcServer.CreatePlaylistRecentInGenreAll()
 	}
 
 	if err != nil {
