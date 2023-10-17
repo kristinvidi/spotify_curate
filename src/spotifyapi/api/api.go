@@ -121,7 +121,7 @@ func (a *API) executeAuthorizationWorkflow() error {
 }
 
 func (a *API) requestAuthorizationCode() (*string, error) {
-	authorizeURL := convert.BuildAuthorizeURL(a.config.Authentication.Scope, a.config.App.ClientID, a.config.App.RedirectURI, a.config.App.State)
+	authorizeURL := convert.BuildAuthorizeURL(a.config.Authentication.Scope, a.config.AppClientInfo.ClientID, a.config.AppClientInfo.RedirectURI, a.config.AppClientInfo.State)
 
 	err := browser.OpenURL(authorizeURL)
 	if err != nil {
@@ -132,7 +132,7 @@ func (a *API) requestAuthorizationCode() (*string, error) {
 	fmt.Println("Enter callback URL: ")
 	fmt.Scanln(&callbackURLString)
 
-	authorizationCode, err := convert.AuthorizationCodeFromCallbackURL(callbackURLString, a.config.App.State)
+	authorizationCode, err := convert.AuthorizationCodeFromCallbackURL(callbackURLString, a.config.AppClientInfo.State)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func (a *API) requestAuthorizationCode() (*string, error) {
 }
 
 func (a *API) requestAccessToken(authorizationCode string) (*model.AccessToken, error) {
-	req, err := convert.BuildAccessTokenRequest(a.config.Authentication.GrantType, authorizationCode, a.config.App.RedirectURI, a.config.Authentication.ContentType, a.config.Authentication.Authorization, a.config.App.ClientID, a.config.App.ClientSecret)
+	req, err := convert.BuildAccessTokenRequest(a.config.Authentication.GrantType, authorizationCode, a.config.AppClientInfo.RedirectURI, a.config.Authentication.ContentType, a.config.Authentication.Authorization, a.config.AppClientInfo.ClientID, a.config.AppClientInfo.ClientSecret)
 	if err != nil {
 		return nil, err
 	}

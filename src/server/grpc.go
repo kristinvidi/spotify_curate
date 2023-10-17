@@ -1,19 +1,18 @@
 package server
 
 import (
-	"fmt"
 	"src/config"
 	"src/domain"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 type GrpcServer struct {
 	config *config.Config
-	logger logrus.FieldLogger
+	logger *zap.Logger
 }
 
-func NewGrpcServer(config *config.Config, logger logrus.FieldLogger) *GrpcServer {
+func NewGrpcServer(config *config.Config, logger *zap.Logger) *GrpcServer {
 	return &GrpcServer{
 		config: config,
 		logger: logger,
@@ -22,7 +21,7 @@ func NewGrpcServer(config *config.Config, logger logrus.FieldLogger) *GrpcServer
 
 func (g *GrpcServer) UpdateUserData() error {
 	api := "update_user_data"
-	fmt.Printf("calling api: %s\n", api)
+	g.logger.Info("calling api", zap.String("api", api))
 
 	updater := domain.NewUserUpdater(g.config)
 
@@ -31,23 +30,28 @@ func (g *GrpcServer) UpdateUserData() error {
 		return err
 	}
 
-	fmt.Println("successfully updated user data")
+	g.logger.Info("successfully updated user data")
 
 	return nil
 }
 
 func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
 	api := "create_recent_in_genre"
-	fmt.Printf("calling api: %s\n", api)
+	g.logger.Info("calling api", zap.String("api", api))
 
 	creator := domain.NewPlaylistCreator(g.config)
 
-	err := creator.CreateRecentInGenre(genre)
+	generated, err := creator.CreateRecentInGenre(genre)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("successfully created %s playlist\n", genre)
+	if !generated {
+		g.logger.Info("no new content to add to playlist, skipping generating recent in genre playlist", zap.String("genre", genre))
+		return nil
+	}
+
+	g.logger.Info("successfully created recent in genre playlist", zap.String("genre", genre))
 
 	return nil
 }
