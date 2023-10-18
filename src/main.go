@@ -32,7 +32,7 @@ func main() {
 
 	grpcServer := server.NewGrpcServer(config, logger)
 
-	job := CREATE_PLAYLIST_RECENT_IN_GENRE_ALL
+	job := UPDATE_USER_DATA
 
 	switch job {
 	case UPDATE_USER_DATA:

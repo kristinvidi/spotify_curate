@@ -20,9 +20,23 @@ type Album struct {
 	ReleaseDatePrecision ReleaseDatePrecision `json:"release_date_precision"`
 }
 
-func (a Album) ReleaseDate() time.Time {
-	t, _ := time.Parse(string(YearMonthDay), a.ReleaseDateString)
-	return t
+func (a Album) ReleaseDate() *time.Time {
+	if a.ReleaseDateString == "" {
+		return nil
+	}
+
+	releaseDate := a.ReleaseDateString
+	if a.ReleaseDatePrecision == ReleaseDatePrecisionYear {
+		releaseDate += "-01-01"
+	}
+
+	if a.ReleaseDatePrecision == ReleaseDatePrecisionMonth {
+		releaseDate += "-01"
+	}
+
+	t, _ := time.Parse(string(YearMonthDay), releaseDate)
+
+	return &t
 }
 
 type Albums []Album
