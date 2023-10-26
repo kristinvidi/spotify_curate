@@ -13,7 +13,7 @@ type Album struct {
 	URI                  URI       `bun:"uri,unique,notnull"`
 	Name                 string    `bun:"display_name,notnull"`
 	Type                 AlbumType `bun:"album_type,notnull"`
-	ReleaseDate          time.Time
+	ReleaseDate          *time.Time
 	ReleaseDatePrecision ReleaseDatePrecision
 	CreatedAt            time.Time `bun:",notnull"`
 }
