@@ -1,9 +1,9 @@
 package mapper
 
 import (
-	db "src/db/model"
 	"time"
 
+	db "src/db/model"
 	api "src/spotifyapi/model"
 )
 
@@ -11,20 +11,32 @@ func DBAAbumsAndArtistMappingFromGetArtistsAlbumsResponse(artistIDToAlbumsRespon
 	var albums db.Albums
 	var mappings db.ArtistAlbumIDMappings
 
-	for id, responses := range artistIDToAlbumsResponses {
+	uniqueAlbums := make(map[api.ID]struct{})
+	for artistID, responses := range artistIDToAlbumsResponses {
 		for _, r := range responses {
 			if r != nil {
 				for _, a := range r.Albums {
-					album := dbAlbumFromAPIAlbum(a)
-					mapping := artistMappingFromAPIArtistAndAlbum(id, a)
-					albums = append(albums, album)
-					mappings = append(mappings, mapping)
+					albums, mappings = addAPIAlbumToDBAlbumsAndMappings(artistID, a, uniqueAlbums, albums, mappings)
 				}
 			}
 		}
 	}
 
 	return albums, mappings
+}
+
+func addAPIAlbumToDBAlbumsAndMappings(artistID api.ID, album api.Album, uniqueAlbums map[api.ID]struct{}, dbAlbums db.Albums, dbMappings db.ArtistAlbumIDMappings) (db.Albums, db.ArtistAlbumIDMappings) {
+	if _, ok := uniqueAlbums[album.ID]; !ok {
+		if album.AlbumType != api.AlbumTypeCompilation {
+			uniqueAlbums[album.ID] = struct{}{}
+			dbAlbum := dbAlbumFromAPIAlbum(album)
+			dbAlbums = append(dbAlbums, dbAlbum)
+			dbMapping := artistMappingFromAPIArtistAndAlbum(artistID, album)
+			dbMappings = append(dbMappings, dbMapping)
+		}
+	}
+
+	return dbAlbums, dbMappings
 }
 
 func dbAlbumFromAPIAlbum(album api.Album) db.Album {
