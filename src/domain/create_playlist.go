@@ -131,7 +131,7 @@ func (p *PlaylistCreator) createRecentInGenrePlaylist(user *model.User, genre st
 }
 
 func (p *PlaylistCreator) getRelativeDateForNewPlaylistInGenre(user model.User, genre string) (*time.Time, error) {
-	// To not overwhelm the user, we'll only go back as far as 4 months max
+	// To not overwhelm the user, we'll only go back as far as 2 months max
 	earliestDate := time.Now().AddDate(0, -2, 0)
 
 	// Fetch the db last created date

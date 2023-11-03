@@ -56,12 +56,7 @@ func BuildAccessTokenRequest(grantType, authCode, redirectURI, contentTypeHeader
 }
 
 func AuthorizationCodeFromCallbackURL(callbackURLString, configState string) (*string, error) {
-	callbackURL, err := url.Parse(callbackURLString)
-	if err != nil {
-		return nil, err
-	}
-
-	params, err := url.ParseQuery(callbackURL.RawQuery)
+	params, err := url.ParseQuery(callbackURLString)
 	if err != nil {
 		return nil, err
 	}
