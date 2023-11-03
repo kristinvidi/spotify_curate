@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"context"
 	"net/http"
 	"time"
 
@@ -123,18 +123,39 @@ func (a *API) executeAuthorizationWorkflow() error {
 func (a *API) requestAuthorizationCode() (*string, error) {
 	authorizeURL := convert.BuildAuthorizeURL(a.config.Authentication.Scope, a.config.AppClientInfo.ClientID, a.config.AppClientInfo.RedirectURI, a.config.AppClientInfo.State)
 
+	// HTTP HANDLER HERE TO CAPTURE THE CALLBACK CODE
+	var authorizationCode *string
+	var serverErr error
+
+	// Create a new server and set the handler
+	server := http.Server{Addr: ":8888"}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Get authorization code from callback URL
+		authorizationCode, serverErr = convert.AuthorizationCodeFromCallbackURL(r.URL.RawQuery, a.config.AppClientInfo.State)
+
+		// Send a response to the user
+		w.Write([]byte("Authorization complete. You can now close this window."))
+
+		// Shut down the server
+		server.Shutdown(context.Background())
+	})
+
+	// Start the server
+	go server.ListenAndServe()
+
+	// Open the browser to prompt user to login
 	err := browser.OpenURL(authorizeURL)
 	if err != nil {
 		return nil, err
 	}
 
-	var callbackURLString string
-	fmt.Println("Enter callback URL: ")
-	fmt.Scanln(&callbackURLString)
+	// We need a lil delay to let the program catch up with itself
+	time.Sleep(6 * time.Second)
 
-	authorizationCode, err := convert.AuthorizationCodeFromCallbackURL(callbackURLString, a.config.AppClientInfo.State)
-	if err != nil {
-		return nil, err
+	// Wait for the server to shut down
+	serverErr = server.ListenAndServe()
+	if serverErr != nil && serverErr != http.ErrServerClosed {
+		return nil, serverErr
 	}
 
 	return authorizationCode, nil
