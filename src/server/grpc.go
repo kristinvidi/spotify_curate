@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// TO-DO: Add grpc server logic, currently it's just an abstracted layer to facilitate building out the grpc code
 type GrpcServer struct {
 	config *config.Config
 	logger *zap.Logger

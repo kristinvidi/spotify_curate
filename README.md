@@ -11,7 +11,7 @@ Welcome to my Spotify playlist curating app - Curate!
 - Related Artists: Select an artist to use as reference and generate a playlist based on their related artists.
 - Compilations: See compilation albums that your artists are included on (great for discovering similar artists!).
 
-## Repo Setup
+## Repo Setup [WORK IN PROGRESS]
 
 ### Install things!
 - Install Docker
