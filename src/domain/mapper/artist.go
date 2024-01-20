@@ -3,6 +3,8 @@ package mapper
 import (
 	db "src/db/model"
 	"src/domain/model"
+	"src/server/converter"
+	pb "src/server/proto"
 )
 
 func ArtistsFromDBArtists(dbArtists db.Artists) []model.Artist {
@@ -20,5 +22,23 @@ func ArtistFromDBArtist(dbArtist db.Artist) model.Artist {
 		URI:       model.URI(dbArtist.URI),
 		Name:      dbArtist.Name,
 		CreatedAt: dbArtist.CreatedAt,
+	}
+}
+
+func ServerArtistsFromDomainArtists(domainArtists []model.Artist) []*pb.Artist {
+	artists := make([]*pb.Artist, len(domainArtists))
+	for i, a := range domainArtists {
+		artists[i] = serverArtistFromDBArtist(a)
+	}
+
+	return artists
+}
+
+func serverArtistFromDBArtist(artist model.Artist) *pb.Artist {
+	return &pb.Artist{
+		Id:        string(artist.ID),
+		Uri:       string(artist.URI),
+		Name:      string(artist.Name),
+		CreatedAt: converter.TimeToPbTimestamp(&artist.CreatedAt),
 	}
 }

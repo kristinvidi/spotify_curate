@@ -1,9 +1,11 @@
 package server
 
 import (
-	"fmt"
 	"src/config"
 	"src/domain"
+	"src/domain/mapper"
+	"src/server/converter"
+	pb "src/server/proto"
 
 	"go.uber.org/zap"
 )
@@ -25,7 +27,7 @@ func (g *GrpcServer) logAPICall(apiName string) {
 	g.logger.Info("calling api", zap.String("api", apiName))
 }
 
-func (g *GrpcServer) UpdateUserData() error {
+func (g *GrpcServer) UpdateUserData() (*pb.UpdateUserDataResponse, error) {
 	api := "update_user_data"
 	g.logAPICall(api)
 
@@ -33,15 +35,15 @@ func (g *GrpcServer) UpdateUserData() error {
 
 	err := updater.UpdateUserData()
 	if err != nil {
-		return err
+		return converter.SerializeUpdateUserData(false), err
 	}
 
 	g.logger.Info("successfully updated user data")
 
-	return nil
+	return converter.SerializeUpdateUserData(true), nil
 }
 
-func (g *GrpcServer) GetUnmappedArtistsForUser() error {
+func (g *GrpcServer) GetUnmappedArtistsForUser() (*pb.GetUnmappedArtistsForUserResponse, error) {
 	api := "get_unmapped_artists_for_user"
 	g.logAPICall(api)
 
@@ -49,14 +51,15 @@ func (g *GrpcServer) GetUnmappedArtistsForUser() error {
 
 	artists, err := updater.GetUnmappedArtistsForUser()
 	if err != nil {
-		return err
+		return converter.SerializeGetUnmappedArtistsForUser(false, nil), err
 	}
-
-	fmt.Println(artists)
 
 	g.logger.Info("successfully fetched unmapped artists for user")
 
-	return nil
+	return converter.SerializeGetUnmappedArtistsForUser(
+		true,
+		mapper.ServerArtistsFromDomainArtists(artists),
+	), nil
 }
 
 func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {

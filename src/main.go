@@ -37,7 +37,8 @@ func main() {
 
 	switch job {
 	case UPDATE_USER_DATA:
-		err = grpcServer.UpdateUserData()
+		response, _ := grpcServer.UpdateUserData()
+		fmt.Print(response)
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE:
 		genre := "Tech House"
