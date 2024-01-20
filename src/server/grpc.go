@@ -24,7 +24,7 @@ func (g *GrpcServer) UpdateUserData() error {
 	api := "update_user_data"
 	g.logger.Info("calling api", zap.String("api", api))
 
-	updater := domain.NewUserUpdater(g.config)
+	updater := domain.NewUserUpdater(g.config, g.logger)
 
 	err := updater.UpdateUserData()
 	if err != nil {

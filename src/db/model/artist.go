@@ -16,3 +16,12 @@ type Artist struct {
 }
 
 type Artists []Artist
+
+func (a *Artists) IDs() []ID {
+	var ids []ID
+	for _, artist := range *a {
+		ids = append(ids, artist.ID)
+	}
+
+	return ids
+}
