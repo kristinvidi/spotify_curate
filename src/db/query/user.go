@@ -13,6 +13,14 @@ func (p *PostgresDB) InsertUserToArtistIDMappings(mappings []model.UserArtistIDM
 	return p.insertWithConflict(&mappings, constants.ColumnUserArtistID, constants.OnConflictDoNothing)
 }
 
+func (p *PostgresDB) DeleteUserToArtistIDGenreMappings(userID model.ID, artistIDs []model.ID) (int64, error) {
+	return p.deleteByUserInAndArtistIDNotIn((*model.UserArtistIDGenreMapping)(nil), userID, artistIDs)
+}
+
+func (p *PostgresDB) DeleteUserToArtistIDMappings(userID model.ID, artistIDs []model.ID) (int64, error) {
+	return p.deleteByUserInAndArtistIDNotIn((*model.UserArtistIDMapping)(nil), userID, artistIDs)
+}
+
 func (p *PostgresDB) InsertAlbums(albums model.Albums) error {
 	return p.insertWithConflict(&albums, constants.ColumnID, constants.OnConflictDoNothing)
 }

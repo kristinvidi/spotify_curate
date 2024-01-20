@@ -83,7 +83,7 @@ func APIArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtists
 	return artists
 }
 
-func DBFollowedArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtistsResponse) []db.Artist {
+func DBFollowedArtistsFromGetFollowedArtistsResponse(response []*api.GetFollowedArtistsResponse) db.Artists {
 	var dbArtists []db.Artist
 
 	for _, r := range response {
