@@ -14,6 +14,7 @@ const (
 	UPDATE_USER_DATA Job = iota
 	CREATE_PLAYLIST_RECENT_IN_GENRE
 	CREATE_PLAYLIST_RECENT_IN_GENRE_ALL
+	GET_UNMAPPED_ARTISTS_FOR_USER
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 
 	grpcServer := server.NewGrpcServer(config, logger)
 
-	job := UPDATE_USER_DATA
+	job := GET_UNMAPPED_ARTISTS_FOR_USER
 
 	switch job {
 	case UPDATE_USER_DATA:
@@ -44,6 +45,9 @@ func main() {
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE_ALL:
 		err = grpcServer.CreatePlaylistRecentInGenreAll()
+
+	case GET_UNMAPPED_ARTISTS_FOR_USER:
+		err = grpcServer.GetUnmappedArtistsForUser()
 	}
 
 	if err != nil {

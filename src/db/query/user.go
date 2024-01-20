@@ -1,8 +1,11 @@
 package query
 
 import (
+	"context"
 	"src/db/constants"
 	"src/db/model"
+
+	"github.com/uptrace/bun"
 )
 
 func (p *PostgresDB) InsertUserData(user model.User) error {
@@ -31,4 +34,39 @@ func (p *PostgresDB) InsertArtistAlbumIDMappings(mappings model.ArtistAlbumIDMap
 
 func (p *PostgresDB) InsertUserUpdateStatus(status model.UserUpdateStatus) error {
 	return p.insertNoConflict(&status)
+}
+
+func (p *PostgresDB) GetArtistIDsWithMappingsForUser(userID model.ID) ([]model.ID, error) {
+	var artistIDs []model.ID
+
+	err := p.db.NewSelect().
+		ColumnExpr(string(constants.ColumnArtistID)).
+		Model(&artistIDs).
+		Table("user_artist_spotify_id_genre_mapping").
+		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
+		Group(string(constants.ColumnArtistID)).
+		Scan(context.Background())
+
+	return artistIDs, err
+}
+
+func (p *PostgresDB) GetUnmappedArtistsForUser(userID model.ID) (model.Artists, error) {
+	mappedArtistsSubquery := p.db.NewSelect().
+		ColumnExpr(string(constants.ColumnArtistID)).
+		Table("user_artist_spotify_id_genre_mapping").
+		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
+		Group(string(constants.ColumnArtistID))
+
+	unmappedArtistsSubquery := p.db.NewSelect().
+		ColumnExpr(string(constants.ColumnArtistID)).
+		Table("user_artist_spotify_id_mapping").
+		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
+		Where("? not in (?)", bun.Ident(constants.ColumnArtistID), mappedArtistsSubquery)
+
+	var artists model.Artists
+	err := p.db.NewSelect().
+		Model(&artists).
+		Where("? in (?)", bun.Ident(constants.ColumnID), unmappedArtistsSubquery).Scan(context.Background())
+
+	return artists, err
 }
