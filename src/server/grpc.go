@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"src/config"
 	"src/domain"
 
@@ -20,9 +21,13 @@ func NewGrpcServer(config *config.Config, logger *zap.Logger) *GrpcServer {
 	}
 }
 
+func (g *GrpcServer) logAPICall(apiName string) {
+	g.logger.Info("calling api", zap.String("api", apiName))
+}
+
 func (g *GrpcServer) UpdateUserData() error {
 	api := "update_user_data"
-	g.logger.Info("calling api", zap.String("api", api))
+	g.logAPICall(api)
 
 	updater := domain.NewUserUpdater(g.config, g.logger)
 
@@ -36,9 +41,27 @@ func (g *GrpcServer) UpdateUserData() error {
 	return nil
 }
 
+func (g *GrpcServer) GetUnmappedArtistsForUser() error {
+	api := "get_unmapped_artists_for_user"
+	g.logAPICall(api)
+
+	updater := domain.NewUserUpdater(g.config, g.logger)
+
+	artists, err := updater.GetUnmappedArtistsForUser()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(artists)
+
+	g.logger.Info("successfully fetched unmapped artists for user")
+
+	return nil
+}
+
 func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
 	api := "create_playlist_recent_in_genre"
-	g.logger.Info("calling api", zap.String("api", api))
+	g.logAPICall(api)
 
 	creator := domain.NewPlaylistCreator(g.config)
 
@@ -59,7 +82,7 @@ func (g *GrpcServer) CreatePlaylistRecentInGenre(genre string) error {
 
 func (g *GrpcServer) CreatePlaylistRecentInGenreAll() error {
 	api := "create_playlist_recent_in_genre_all"
-	g.logger.Info("calling api", zap.String("api", api))
+	g.logAPICall(api)
 
 	creator := domain.NewPlaylistCreator(g.config)
 

@@ -108,6 +108,20 @@ func (u *UserUpdater) UpdateUserData() error {
 	return nil
 }
 
+func (u *UserUpdater) GetUnmappedArtistsForUser() ([]model.Artist, error) {
+	user, err := u.getAndStoreCurrentUserProfile()
+	if err != nil {
+		return nil, err
+	}
+
+	artists, err := u.db.GetUnmappedArtistsForUser(mapper.IDToDBID(user.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.ArtistsFromDBArtists(artists), nil
+}
+
 func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
 	response, err := u.userAPI.GetCurrentUsersProfile()
 	if err != nil {
