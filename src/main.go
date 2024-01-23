@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"src/config"
 	"src/server"
+	pb "src/server/proto"
 
 	"go.uber.org/zap"
 )
@@ -33,22 +34,28 @@ func main() {
 
 	grpcServer := server.NewGrpcServer(config, logger)
 
-	job := GET_UNMAPPED_ARTISTS_FOR_USER
+	job := UPDATE_USER_DATA
 
 	switch job {
 	case UPDATE_USER_DATA:
-		response, _ := grpcServer.UpdateUserData()
-		fmt.Print(response)
+		request := &pb.UpdateUserDataRequest{}
+		response, _ := grpcServer.UpdateUserData(request)
+		fmt.Println(response)
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE:
-		genre := "Tech House"
-		err = grpcServer.CreatePlaylistRecentInGenre(genre)
+		request := &pb.CreatePlaylistRecentInGenreRequest{Genre: "Psytech"}
+		response, _ := grpcServer.CreatePlaylistRecentInGenre(request)
+		fmt.Println(response)
 
 	case CREATE_PLAYLIST_RECENT_IN_GENRE_ALL:
-		err = grpcServer.CreatePlaylistRecentInGenreAll()
+		request := &pb.CreatePlaylistRecentInGenreAllRequest{}
+		response, _ := grpcServer.CreatePlaylistRecentInGenreAll(request)
+		fmt.Println(response)
 
 	case GET_UNMAPPED_ARTISTS_FOR_USER:
-		err = grpcServer.GetUnmappedArtistsForUser()
+		request := &pb.GetUnmappedArtistsForUserRequest{}
+		response, _ := grpcServer.GetUnmappedArtistsForUser(request)
+		fmt.Println(response)
 	}
 
 	if err != nil {

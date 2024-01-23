@@ -3,8 +3,8 @@ package mapper
 import (
 	db "src/db/model"
 	"src/domain/model"
-	"src/server/converter"
 	pb "src/server/proto"
+	"src/server/serializer"
 )
 
 func ArtistsFromDBArtists(dbArtists db.Artists) []model.Artist {
@@ -39,6 +39,6 @@ func serverArtistFromDBArtist(artist model.Artist) *pb.Artist {
 		Id:        string(artist.ID),
 		Uri:       string(artist.URI),
 		Name:      string(artist.Name),
-		CreatedAt: converter.TimeToPbTimestamp(&artist.CreatedAt),
+		CreatedAt: serializer.TimeToPbTimestamp(&artist.CreatedAt),
 	}
 }

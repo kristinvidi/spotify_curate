@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 package spotify_curate;
 
-option go_package = "github.com/kristinvidi/spotify_curate/tree/main/postgres";
+option go_package = "github.com/kristinvidi/spotify_curate/tree/main/spotify_curate";
 
 service SpotifyCurate {
     rpc UpdateUserData (UpdateUserDataRequest) returns (UpdateUserDataResponse) {}
@@ -17,6 +17,7 @@ service SpotifyCurate {
 
 message General {
     bool success = 1;
+    string failure_details = 2;
 }
 
 message UpdateUserDataRequest {}
