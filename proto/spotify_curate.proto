@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+// import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+// import "google/protobuf/empty.proto";
+
+package spotify_curate;
+
+option go_package = "github.com/kristinvidi/spotify_curate/tree/main/spotify_curate";
+
+service SpotifyCurate {
+    rpc UpdateUserData (UpdateUserDataRequest) returns (UpdateUserDataResponse) {}
+    rpc CreatePlaylistRecentInGenre (CreatePlaylistRecentInGenreResponse) returns (CreatePlaylistRecentInGenreResponse) {}
+    rpc CreatePlaylistRecentInGenreAll (CreatePlaylistRecentInGenreAllRequest) returns (CreatePlaylistRecentInGenreAllResponse) {}
+    rpc GetUnmappedArtistsForUser (GetUnmappedArtistsForUserRequest) returns (GetUnmappedArtistsForUserResponse) {}
+}
+
+message General {
+    bool success = 1;
+    string failure_details = 2;
+}
+
+message UpdateUserDataRequest {}
+
+message UpdateUserDataResponse {
+    General general = 1;
+}
+
+message CreatePlaylistRecentInGenreRequest {
+    string genre = 1;
+}
+
+message CreatePlaylistRecentInGenreResponse {
+    General general = 1;
+}
+
+message CreatePlaylistRecentInGenreAllRequest {}
+
+message CreatePlaylistRecentInGenreAllResponse {
+    General general = 1;
+}
+
+message GetUnmappedArtistsForUserRequest {}
+
+message GetUnmappedArtistsForUserResponse {
+    General general = 1;
+    repeated Artist artists = 2;
+}
+
+message Artist {
+    string id = 1;
+    string uri = 2;
+    string name = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
