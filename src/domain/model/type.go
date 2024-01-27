@@ -1,8 +1,10 @@
 package model
 
-type ID string
-type URI string
-type Genre string
+type (
+	ID    string
+	URI   string
+	Genre string
+)
 
 type AlbumType string
 

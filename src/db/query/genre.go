@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"src/db/model"
 )
 
@@ -34,7 +35,6 @@ func (p *PostgresDB) GetGenreMappingsForUser(userID model.ID) ([]model.UserIDGen
 		Model(&genreMappings).
 		Where("user_spotify_id = ?", userID).
 		Scan(context.Background())
-
 	if err != nil {
 		return nil, err
 	}

@@ -2,8 +2,9 @@ package query
 
 import (
 	"context"
-	"src/db/model"
 	"time"
+
+	"src/db/model"
 )
 
 func (p *PostgresDB) GetLastCreatedAtDateForPlaylistOfGenre(userID model.ID, genre model.Genre) (*time.Time, error) {
@@ -16,7 +17,6 @@ func (p *PostgresDB) GetLastCreatedAtDateForPlaylistOfGenre(userID model.ID, gen
 		Where("usigm.user_spotify_id = ?", userID).
 		Where("usigm.genre = ?", genre).
 		Scan(context.Background())
-
 	if err != nil {
 		return nil, err
 	}

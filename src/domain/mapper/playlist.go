@@ -1,8 +1,9 @@
 package mapper
 
 import (
-	db "src/db/model"
 	"time"
+
+	db "src/db/model"
 )
 
 func DBPlaylistRecentInGenreGeneratedStatus(userID db.ID, genreID int32) db.PlaylistRecentInGenreGeneratedStatus {

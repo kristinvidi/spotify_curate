@@ -59,7 +59,6 @@ func (a *AccessTokenStorage) WriteToFile(token model.AccessToken) error {
 func (a *AccessTokenStorage) fileExists(filepath string) bool {
 	if _, err := os.Stat(filepath); err == nil {
 		return true
-
 	} else {
 		return false
 	}

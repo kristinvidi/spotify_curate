@@ -1,8 +1,9 @@
 package mapper
 
 import (
-	api "src/spotifyapi/model"
 	"strings"
+
+	api "src/spotifyapi/model"
 )
 
 func TrackAPIURIsFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResponse) []api.URI {
@@ -16,7 +17,6 @@ func TrackAPIURIsFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResp
 			if !trackHasMixed(t) {
 				trackIDs = append(trackIDs, t.URI)
 			}
-
 		}
 	}
 

@@ -1,13 +1,14 @@
 package domain
 
 import (
+	"time"
+
 	"src/config"
 	"src/db/query"
 	"src/domain/mapper"
 	"src/domain/model"
 	"src/spotifyapi"
 	"src/spotifyapi/api"
-	"time"
 )
 
 type PlaylistCreator struct {

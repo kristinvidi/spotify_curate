@@ -1,10 +1,11 @@
 package mapper
 
 import (
+	"time"
+
 	db "src/db/model"
 	"src/domain/model"
 	api "src/spotifyapi/model"
-	"time"
 )
 
 func UserFromCurrentUsersProfileResponse(response *api.GetCurrentUsersProfileResponse) *model.User {
