@@ -32,11 +32,18 @@ type DB struct {
 	Port     string `mapstructure:"port"`
 }
 
+type GRPC struct {
+	Network string `mapstructure:"network"`
+	Host    string `mapstructure:"host"`
+	Port    int    `mapstructure:"port"`
+}
+
 type Config struct {
 	AppEnv         AppEnv               `mapstructure:"app_env"`
 	AppClientInfo  AppClientInformation `mapstructure:"app_client_information"`
 	Authentication Authentication       `mapstructure:"authentication"`
 	Database       DB                   `mapstructure:"db"`
+	GRPC           GRPC                 `mapstructure:"grpc"`
 }
 
 func New() (*Config, error) {
