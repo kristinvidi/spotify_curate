@@ -2,8 +2,9 @@ package query
 
 import (
 	"context"
-	"src/db/model"
 	"time"
+
+	"src/db/model"
 )
 
 func (p *PostgresDB) GetAlbumIDsForGenreAfterDate(userID model.ID, genre model.Genre, afterDate time.Time) ([]model.ID, error) {

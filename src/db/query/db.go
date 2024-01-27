@@ -1,9 +1,9 @@
 package query
 
 import (
+	"context"
 	"fmt"
 
-	"context"
 	"src/config"
 	"src/db/connection"
 	"src/db/constants"
