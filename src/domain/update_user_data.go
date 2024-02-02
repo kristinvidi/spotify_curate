@@ -122,6 +122,62 @@ func (u *UserUpdater) GetUnmappedArtistsForUser() ([]model.Artist, error) {
 	return mapper.ArtistsFromDBArtists(artists), nil
 }
 
+func (u *UserUpdater) CreateArtistToGenreMappingForUser(spotifyUserID string, mappings []model.GenreToArtistsMapping) ([]model.GenreToArtistsMapping, error) {
+	var unfollowedArtists []model.GenreToArtistsMapping
+
+	dbUserID := mapper.StringToDBID(spotifyUserID)
+	for _, mapping := range mappings {
+		genre, err := u.db.GetGenreMappingForUserAndGenreName(dbUserID, mapping.Genre)
+		if err != nil {
+			return nil, err
+		}
+
+		dbArtists, err := u.db.GetMappedArtistsForUserByArtistNames(dbUserID, mapping.ArtistNames)
+		if err != nil {
+			return nil, err
+		}
+
+		artists := mapper.ArtistsFromDBArtists(dbArtists)
+		unfollowed := u.getUnfollowedArtistNames(artists, mapping.ArtistNames)
+
+		if len(unfollowed) > 0 {
+			genreToArtistMapping := model.GenreToArtistsMapping{Genre: mapping.Genre, ArtistNames: unfollowed}
+
+			unfollowedArtists = append(unfollowedArtists, genreToArtistMapping)
+		}
+
+		genreToArtistMappings := mapper.DBUserArtistIDGenreMappingsFromDBGenreAndArtists(*genre, artists)
+
+		err = u.db.InsertUserArtistIDGenreMappings(genreToArtistMappings)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return unfollowedArtists, nil
+}
+
+func (u *UserUpdater) getUnfollowedArtistNames(artists []model.Artist, artistNames []string) []string {
+	var unfollowed []string
+	for _, artistName := range artistNames {
+		if !u.artistNameInArtists(artistName, artists) {
+			unfollowed = append(unfollowed, artistName)
+		}
+	}
+
+	return unfollowed
+}
+
+func (u *UserUpdater) artistNameInArtists(artistName string, artists []model.Artist) bool {
+	for _, artist := range artists {
+		if artist.Name == artistName {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
 	response, err := u.userAPI.GetCurrentUsersProfile()
 	if err != nil {

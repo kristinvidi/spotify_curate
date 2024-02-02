@@ -23,6 +23,7 @@ const (
 	SpotifyCurate_CreatePlaylistRecentInGenre_FullMethodName    = "/proto.SpotifyCurate/CreatePlaylistRecentInGenre"
 	SpotifyCurate_CreatePlaylistRecentInGenreAll_FullMethodName = "/proto.SpotifyCurate/CreatePlaylistRecentInGenreAll"
 	SpotifyCurate_GetUnmappedArtistsForUser_FullMethodName      = "/proto.SpotifyCurate/GetUnmappedArtistsForUser"
+	SpotifyCurate_CreateGenreToArtistsMappings_FullMethodName   = "/proto.SpotifyCurate/CreateGenreToArtistsMappings"
 )
 
 // SpotifyCurateClient is the client API for SpotifyCurate service.
@@ -33,6 +34,7 @@ type SpotifyCurateClient interface {
 	CreatePlaylistRecentInGenre(ctx context.Context, in *CreatePlaylistRecentInGenreRequest, opts ...grpc.CallOption) (*CreatePlaylistRecentInGenreResponse, error)
 	CreatePlaylistRecentInGenreAll(ctx context.Context, in *CreatePlaylistRecentInGenreAllRequest, opts ...grpc.CallOption) (*CreatePlaylistRecentInGenreAllResponse, error)
 	GetUnmappedArtistsForUser(ctx context.Context, in *GetUnmappedArtistsForUserRequest, opts ...grpc.CallOption) (*GetUnmappedArtistsForUserResponse, error)
+	CreateGenreToArtistsMappings(ctx context.Context, in *CreateGenreToArtistsMappingsRequest, opts ...grpc.CallOption) (*CreateGenreToArtistsMappingsResponse, error)
 }
 
 type spotifyCurateClient struct {
@@ -79,6 +81,15 @@ func (c *spotifyCurateClient) GetUnmappedArtistsForUser(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *spotifyCurateClient) CreateGenreToArtistsMappings(ctx context.Context, in *CreateGenreToArtistsMappingsRequest, opts ...grpc.CallOption) (*CreateGenreToArtistsMappingsResponse, error) {
+	out := new(CreateGenreToArtistsMappingsResponse)
+	err := c.cc.Invoke(ctx, SpotifyCurate_CreateGenreToArtistsMappings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SpotifyCurateServer is the server API for SpotifyCurate service.
 // All implementations must embed UnimplementedSpotifyCurateServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type SpotifyCurateServer interface {
 	CreatePlaylistRecentInGenre(context.Context, *CreatePlaylistRecentInGenreRequest) (*CreatePlaylistRecentInGenreResponse, error)
 	CreatePlaylistRecentInGenreAll(context.Context, *CreatePlaylistRecentInGenreAllRequest) (*CreatePlaylistRecentInGenreAllResponse, error)
 	GetUnmappedArtistsForUser(context.Context, *GetUnmappedArtistsForUserRequest) (*GetUnmappedArtistsForUserResponse, error)
+	CreateGenreToArtistsMappings(context.Context, *CreateGenreToArtistsMappingsRequest) (*CreateGenreToArtistsMappingsResponse, error)
 	mustEmbedUnimplementedSpotifyCurateServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedSpotifyCurateServer) CreatePlaylistRecentInGenreAll(context.C
 }
 func (UnimplementedSpotifyCurateServer) GetUnmappedArtistsForUser(context.Context, *GetUnmappedArtistsForUserRequest) (*GetUnmappedArtistsForUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUnmappedArtistsForUser not implemented")
+}
+func (UnimplementedSpotifyCurateServer) CreateGenreToArtistsMappings(context.Context, *CreateGenreToArtistsMappingsRequest) (*CreateGenreToArtistsMappingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGenreToArtistsMappings not implemented")
 }
 func (UnimplementedSpotifyCurateServer) mustEmbedUnimplementedSpotifyCurateServer() {}
 
@@ -191,6 +206,24 @@ func _SpotifyCurate_GetUnmappedArtistsForUser_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SpotifyCurate_CreateGenreToArtistsMappings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGenreToArtistsMappingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpotifyCurateServer).CreateGenreToArtistsMappings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpotifyCurate_CreateGenreToArtistsMappings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpotifyCurateServer).CreateGenreToArtistsMappings(ctx, req.(*CreateGenreToArtistsMappingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SpotifyCurate_ServiceDesc is the grpc.ServiceDesc for SpotifyCurate service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var SpotifyCurate_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUnmappedArtistsForUser",
 			Handler:    _SpotifyCurate_GetUnmappedArtistsForUser_Handler,
+		},
+		{
+			MethodName: "CreateGenreToArtistsMappings",
+			Handler:    _SpotifyCurate_CreateGenreToArtistsMappings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

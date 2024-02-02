@@ -2,12 +2,21 @@ package server
 
 import (
 	"src/domain"
-	"src/domain/mapper"
 	pb "src/server/proto"
 	"src/server/serializer"
 
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
+)
+
+type apiEndpoint string
+
+const (
+	API_UPDATE_USER_DATA                    apiEndpoint = "update_user_data"
+	API_GET_UNMAPPED_ARTISTS_FOR_USER       apiEndpoint = "get_unmapped_artists_for_user"
+	API_CREATE_PLAYLIST_RECENT_IN_GENRE     apiEndpoint = "create_playlist_recent_in_genre"
+	API_CREATE_PLAYLIST_RECENT_IN_GENRE_ALL apiEndpoint = "create_playlist_recent_in_genre_all"
+	API_CREATE_ARTIST_GENRE_MAPPING         apiEndpoint = "create_artist_genre_mapping"
 )
 
 func (g *GrpcServer) UpdateUserData(ctx context.Context, request *pb.UpdateUserDataRequest) (*pb.UpdateUserDataResponse, error) {
@@ -38,15 +47,33 @@ func (g *GrpcServer) GetUnmappedArtistsForUser(ctx context.Context, request *pb.
 	if err != nil {
 		g.logError(api, err)
 
-		return serializer.SerializeGetUnmappedArtistsForUser(false, nil), err
+		return serializer.SerializeGetUnmappedArtistsForUserResponse(false, nil), err
 	}
 
 	g.logAPICallSuccess(api)
 
-	return serializer.SerializeGetUnmappedArtistsForUser(
-		true,
-		mapper.ServerArtistsFromDomainArtists(artists),
-	), nil
+	return serializer.SerializeGetUnmappedArtistsForUserResponse(true, artists), nil
+}
+
+func (g *GrpcServer) CreateGenreToArtistsMappings(ctx context.Context, request *pb.CreateGenreToArtistsMappingsRequest) (*pb.CreateGenreToArtistsMappingsResponse, error) {
+	api := API_CREATE_ARTIST_GENRE_MAPPING
+	g.logAPICallStart(api)
+
+	userID := request.GetUserSpotifyId()
+	mappings := serializer.DeserializeCreateGenreToArtistsMappingsRequest(request)
+
+	updater := domain.NewUserUpdater(g.config, g.logger)
+
+	unfollowedArtists, err := updater.CreateArtistToGenreMappingForUser(userID, mappings)
+	if err != nil {
+		g.logError(api, err)
+
+		return serializer.SerializeCreateGenreToArtistsMappingsResponse(false, nil), err
+	}
+
+	g.logAPICallSuccess(api)
+
+	return serializer.SerializeCreateGenreToArtistsMappingsResponse(true, unfollowedArtists), nil
 }
 
 func (g *GrpcServer) CreatePlaylistRecentInGenre(ctx context.Context, request *pb.CreatePlaylistRecentInGenreRequest) (*pb.CreatePlaylistRecentInGenreResponse, error) {

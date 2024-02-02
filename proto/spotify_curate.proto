@@ -13,6 +13,7 @@ service SpotifyCurate {
     rpc CreatePlaylistRecentInGenre (CreatePlaylistRecentInGenreRequest) returns (CreatePlaylistRecentInGenreResponse) {}
     rpc CreatePlaylistRecentInGenreAll (CreatePlaylistRecentInGenreAllRequest) returns (CreatePlaylistRecentInGenreAllResponse) {}
     rpc GetUnmappedArtistsForUser (GetUnmappedArtistsForUserRequest) returns (GetUnmappedArtistsForUserResponse) {}
+    rpc CreateGenreToArtistsMappings (CreateGenreToArtistsMappingsRequest) returns (CreateGenreToArtistsMappingsResponse) {}
 }
 
 message General {
@@ -52,4 +53,19 @@ message Artist {
     string uri = 2;
     string name = 3;
     google.protobuf.Timestamp created_at = 4;
+}
+
+message CreateGenreToArtistsMappingsRequest {
+    string user_spotify_id = 1;
+    repeated GenreToArtistsMapping genre_to_artists_mappings = 2;
+}
+
+message GenreToArtistsMapping {
+    string genre = 1;
+    repeated string artist_names = 2;
+}
+
+message CreateGenreToArtistsMappingsResponse {
+    General general = 1;
+    repeated GenreToArtistsMapping failed_genre_to_artists_mappings = 2;
 }
