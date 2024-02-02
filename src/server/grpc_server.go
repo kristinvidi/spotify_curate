@@ -15,15 +15,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type apiEndpoint string
-
-const (
-	API_UPDATE_USER_DATA                    apiEndpoint = "update_user_data"
-	API_GET_UNMAPPED_ARTISTS_FOR_USER       apiEndpoint = "get_unmapped_artists_for_user"
-	API_CREATE_PLAYLIST_RECENT_IN_GENRE     apiEndpoint = "create_playlist_recent_in_genre"
-	API_CREATE_PLAYLIST_RECENT_IN_GENRE_ALL apiEndpoint = "create_playlist_recent_in_genre_all"
-)
-
 type GrpcServer struct {
 	pb.UnimplementedSpotifyCurateServer
 

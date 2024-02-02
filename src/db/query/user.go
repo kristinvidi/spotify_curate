@@ -53,13 +53,13 @@ func (p *PostgresDB) GetArtistIDsWithMappingsForUser(userID model.ID) ([]model.I
 
 func (p *PostgresDB) GetUnmappedArtistsForUser(userID model.ID) (model.Artists, error) {
 	mappedArtistsSubquery := p.db.NewSelect().
-		ColumnExpr(string(constants.ColumnArtistID)).
+		ColumnExpr(constants.ColumnArtistID.String()).
 		Table("user_artist_spotify_id_genre_mapping").
 		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
-		Group(string(constants.ColumnArtistID))
+		Group(constants.ColumnArtistID.String())
 
 	unmappedArtistsSubquery := p.db.NewSelect().
-		ColumnExpr(string(constants.ColumnArtistID)).
+		ColumnExpr(constants.ColumnArtistID.String()).
 		Table("user_artist_spotify_id_mapping").
 		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
 		Where("? not in (?)", bun.Ident(constants.ColumnArtistID), mappedArtistsSubquery)
@@ -68,6 +68,19 @@ func (p *PostgresDB) GetUnmappedArtistsForUser(userID model.ID) (model.Artists, 
 	err := p.db.NewSelect().
 		Model(&artists).
 		Where("? in (?)", bun.Ident(constants.ColumnID), unmappedArtistsSubquery).Scan(context.Background())
+
+	return artists, err
+}
+
+func (p *PostgresDB) GetMappedArtistsForUserByArtistNames(userID model.ID, artistNames []string) (model.Artists, error) {
+	var artists model.Artists
+
+	err := p.db.NewSelect().
+		Model(&artists).
+		Join("INNER JOIN user_artist_spotify_id_mapping uasim ON uasim.artist_spotify_id = artist.spotify_id").
+		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
+		Where("? in (?)", bun.Ident(constants.ColumnDisplayName), bun.In(artistNames)).
+		Scan(context.Background())
 
 	return artists, err
 }

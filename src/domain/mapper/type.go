@@ -6,6 +6,10 @@ import (
 	api "src/spotifyapi/model"
 )
 
+func StringToDBID(id string) db.ID {
+	return db.ID(id)
+}
+
 func DBIDsToAPIIDs(ids []db.ID) []api.ID {
 	var apiIDs []api.ID
 	for _, id := range ids {
