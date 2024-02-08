@@ -57,20 +57,22 @@ func (p *PlaylistCreator) CreateRecentInGenreAll() (int, error) {
 	return playlistCount, nil
 }
 
-func (p *PlaylistCreator) CreateRecentInGenre(genre string) (bool, error) {
+func (p *PlaylistCreator) CreateRecentInGenre(genres []string) error {
 	response, err := p.userAPI.GetCurrentUsersProfile()
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	user := mapper.UserFromCurrentUsersProfileResponse(response)
 
-	err = p.createRecentInGenrePlaylist(user, genre)
-	if err != nil {
-		return false, err
+	for _, genre := range genres {
+		err = p.createRecentInGenrePlaylist(user, genre)
+		if err != nil {
+			return err
+		}
 	}
 
-	return true, nil
+	return nil
 }
 
 func (p *PlaylistCreator) createRecentInGenrePlaylist(user *model.User, genre string) error {

@@ -89,18 +89,14 @@ func (g *GrpcServer) CreatePlaylistRecentInGenre(ctx context.Context, request *p
 
 	creator := domain.NewPlaylistCreator(g.config)
 
-	generated, err := creator.CreateRecentInGenre(genre)
+	err = creator.CreateRecentInGenre(genre)
 	if err != nil {
 		g.logError(api, err)
 
 		return serializer.SerializeCreatePlaylistRecentInGenreResponse(false), err
 	}
 
-	if !generated {
-		g.logger.Info("no new content to add to playlist, skipping generating recent in genre playlist", zap.String("genre", genre))
-	} else {
-		g.logAPICallSuccess(api)
-	}
+	g.logAPICallSuccess(api)
 
 	return serializer.SerializeCreatePlaylistRecentInGenreResponse(true), nil
 }
