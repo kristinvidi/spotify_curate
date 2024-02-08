@@ -28,7 +28,7 @@ message UpdateUserDataResponse {
 }
 
 message CreatePlaylistRecentInGenreRequest {
-    string genre = 1;
+    repeated string genre = 1;
 }
 
 message CreatePlaylistRecentInGenreResponse {

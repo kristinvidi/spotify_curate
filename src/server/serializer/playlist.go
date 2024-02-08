@@ -2,9 +2,9 @@ package serializer
 
 import pb "src/server/proto"
 
-func DeserializeCreatePlaylistRecentInGenreRequest(request *pb.CreatePlaylistRecentInGenreRequest) (string, error) {
+func DeserializeCreatePlaylistRecentInGenreRequest(request *pb.CreatePlaylistRecentInGenreRequest) ([]string, error) {
 	if request == nil {
-		return "", (&deserializeError{message: "request is nil"}).Error()
+		return []string{}, (&deserializeError{message: "request is nil"}).Error()
 	}
 
 	return request.Genre, nil
