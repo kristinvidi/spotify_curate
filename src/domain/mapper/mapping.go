@@ -17,3 +17,17 @@ func DBUserArtistIDGenreMappingsFromDBGenreAndArtists(genre db.UserIDGenreMappin
 
 	return mappings
 }
+
+func DBUserPlaylistTrackIDMappings(userID, playlistID db.ID, trackIDs []db.ID) []db.UserPlaylistTrackIDMapping {
+	mappings := make([]db.UserPlaylistTrackIDMapping, len(trackIDs))
+
+	for i, trackID := range trackIDs {
+		mappings[i] = db.UserPlaylistTrackIDMapping{
+			UserID:     userID,
+			PlaylistID: playlistID,
+			TrackID:    trackID,
+		}
+	}
+
+	return mappings
+}

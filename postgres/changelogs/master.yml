@@ -11,3 +11,6 @@ databaseChangeLog:
   - include:
       file: 2023-10/main.yml
       relativeToChangelogFile: true
+  - include:
+      file: 2024-03/main.yml
+      relativeToChangelogFile: true

@@ -107,7 +107,7 @@ func (p *PlaylistCreator) createRecentInGenrePlaylist(user *model.User, genre st
 		return err
 	}
 
-	trackURIs := mapper.TrackAPIURIsFromGetAlbumTracksResponses(trackResponses)
+	tracks := mapper.SimplifiedTracksFromGetAlbumTracksResponses(trackResponses)
 
 	// Create playlist
 	playlistName := p.playlistNameForRecentInGenre(genre, *lastCreatedDate)
@@ -117,15 +117,22 @@ func (p *PlaylistCreator) createRecentInGenrePlaylist(user *model.User, genre st
 	}
 
 	// Add tracks to playlist
-	_, err = p.playlistAPI.AddTracksToPlaylist(playlistResponse.ID, trackURIs)
+	_, err = p.playlistAPI.AddTracksToPlaylist(playlistResponse.ID, mapper.URIsToAPIURIs(tracks.URIs()))
 	if err != nil {
 		return err
 	}
 
 	// Update db with newly created playlist
 	err = p.db.InsertPlaylistRecentInGenreGeneratedStatus(
-		mapper.DBPlaylistRecentInGenreGeneratedStatus(dbUser.ID, genreMapping.ID),
+		mapper.DBPlaylistRecentInGenreGeneratedStatus(dbUser.ID, mapper.APIIDToDBID(playlistResponse.ID), genreMapping.ID),
 	)
+	if err != nil {
+		return err
+	}
+
+	// Add saved tracks to db
+	trackIDs := mapper.IDsToDBIDs(tracks.IDs())
+	err = p.db.InsertUserPlaylistTrackIDMappings(mapper.DBUserPlaylistTrackIDMappings(dbUser.ID, mapper.APIIDToDBID(playlistResponse.ID), trackIDs))
 	if err != nil {
 		return err
 	}

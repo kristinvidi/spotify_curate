@@ -3,11 +3,20 @@ package mapper
 import (
 	"strings"
 
+	"src/domain/model"
 	api "src/spotifyapi/model"
 )
 
-func TrackAPIURIsFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResponse) []api.URI {
-	var trackIDs []api.URI
+func SimplifiedTrackFromAPISimplifiedTrack(t api.SimplifiedTrack) model.SimplifiedTrack {
+	return model.SimplifiedTrack{
+		Name: t.Name,
+		ID:   model.ID(t.ID),
+		URI:  model.URI(t.URI),
+	}
+}
+
+func SimplifiedTracksFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResponse) model.SimplifiedTracks {
+	var tracks model.SimplifiedTracks
 
 	for _, r := range responses {
 		if r == nil {
@@ -15,12 +24,12 @@ func TrackAPIURIsFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResp
 		}
 		for _, t := range r.Tracks {
 			if !trackHasMixed(t) {
-				trackIDs = append(trackIDs, t.URI)
+				tracks = append(tracks, SimplifiedTrackFromAPISimplifiedTrack(t))
 			}
 		}
 	}
 
-	return trackIDs
+	return tracks
 }
 
 func trackHasMixed(t api.SimplifiedTrack) bool {

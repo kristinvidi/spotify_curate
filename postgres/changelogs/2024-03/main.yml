@@ -1,0 +1,51 @@
+# 2024-03
+
+databaseChangeLog:
+  - logicalFilePath: main.yml
+  - changeSet:
+      id: adding-user_playlist_track_spotify_id_mapping-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user_playlist_track_spotify_id_mapping
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_playlist_track_spotify_id_mapping_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_playlist_track_spotify_id_mapping_user_spotify_id
+                    referencedTableName: spotify_user
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: playlist_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: track_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: unique_user_playlist_track_spotify_id_mapping
+            tableName: user_playlist_track_spotify_id_mapping
+            columnNames: user_spotify_id, playlist_spotify_id, track_spotify_id
+  - changeSet:
+      id: adding-playlist_id-to-playlist_recent_in_genre_generated_status-table
+      author: kvidi
+      changes:
+        - addColumn:
+            tableName: playlist_recent_in_genre_generated_status
+            columns:
+              - column:
+                  name: playlist_spotify_id
+                  type: varchar(50)

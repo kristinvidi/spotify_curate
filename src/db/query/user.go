@@ -84,3 +84,7 @@ func (p *PostgresDB) GetMappedArtistsForUserByArtistNames(userID model.ID, artis
 
 	return artists, err
 }
+
+func (p *PostgresDB) InsertUserPlaylistTrackIDMappings(mappings []model.UserPlaylistTrackIDMapping) error {
+	return p.insertWithConflict(&mappings, constants.ColumnUserPlaylistTrackID, constants.OnConflictDoNothing)
+}
