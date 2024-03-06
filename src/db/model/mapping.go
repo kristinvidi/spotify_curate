@@ -40,3 +40,11 @@ type ArtistAlbumIDMapping struct {
 }
 
 type ArtistAlbumIDMappings []ArtistAlbumIDMapping
+
+type UserPlaylistTrackIDMapping struct {
+	bun.BaseModel `bun:"table:user_playlist_track_spotify_id_mapping"`
+
+	UserID     ID `bun:"user_spotify_id,notnull"`
+	PlaylistID ID `bun:"playlist_spotify_id,notnull"`
+	TrackID    ID `bun:"track_spotify_id,notnull"`
+}
