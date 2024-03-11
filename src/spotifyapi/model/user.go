@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type GetCurrentUsersProfileResponse struct {
 	Country     string `json:"country"`
 	DisplayName string `json:"display_name"`
@@ -19,4 +21,19 @@ type GetFollowedArtistsResponse struct {
 		Limit int    `json:"limit"`
 		HREF  string `json:"href"`
 	} `json:"artists"`
+}
+
+type TrackItem struct {
+	AddedAt string          `json:"added_at"`
+	Track   SimplifiedTrack `json:"track"`
+}
+
+func (t *TrackItem) SavedAt() time.Time {
+	date, _ := time.Parse(time.RFC3339, t.AddedAt)
+	return date
+}
+
+type GetUsersSavedTracksResponse struct {
+	Items []TrackItem `json:"items"`
+	Total int         `json:"total"`
 }

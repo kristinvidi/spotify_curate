@@ -115,3 +115,24 @@ func UserUpdateStatus(userID model.ID) db.UserUpdateStatus {
 		UpdatedAt: time.Now(),
 	}
 }
+
+func DBUserSavedTracksFromGetUsersSavedTracksResponse(response []*api.GetUsersSavedTracksResponse, userID model.ID) []db.UserSavedTracks {
+	var userSavedTracks []db.UserSavedTracks
+
+	for _, r := range response {
+		if r == nil {
+			continue
+		}
+
+		for _, a := range r.Items {
+			track := db.UserSavedTracks{
+				UserID:  db.ID(userID),
+				TrackID: db.ID(a.Track.ID),
+				SavedAt: a.SavedAt(),
+			}
+			userSavedTracks = append(userSavedTracks, track)
+		}
+	}
+
+	return userSavedTracks
+}

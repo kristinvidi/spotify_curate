@@ -85,3 +85,47 @@ func (u *User) encodeArtistTypeAndLimit(inputs model.RequestInput) string {
 
 	return params.Encode()
 }
+
+func (u *User) BuildGetUsersSavedTracksRequest(accessToken model.AccessToken, inputs *model.RequestInput) (*http.Request, error) {
+	url := url.URL{
+		Scheme: constants.URLScheme,
+		Host:   constants.URLHostAPI,
+		Path:   constants.URLPathMeTracks,
+	}
+	url.RawQuery = u.encodeOffsetAndLimit(*inputs)
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add(constants.HeaderAuthorization, accessToken.HeaderValue())
+
+	return req, nil
+}
+
+func (u *User) encodeOffsetAndLimit(inputs model.RequestInput) string {
+	url := url.URL{}
+	params := url.Query()
+
+	params.Set(constants.ParameterLimit, *inputs.BatchSize())
+	params.Set(constants.ParameterOffset, *inputs.Offset())
+
+	if inputs.After() == nil {
+		return params.Encode()
+	}
+
+	params.Set(constants.ParameterAfter, *inputs.After())
+
+	return params.Encode()
+}
+
+func (u *User) DecodeGetUsersSavedTracksResponse(response http.Response) (*model.GetUsersSavedTracksResponse, error) {
+	var decodedResponse model.GetUsersSavedTracksResponse
+	err := json.NewDecoder(response.Body).Decode(&decodedResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &decodedResponse, nil
+}

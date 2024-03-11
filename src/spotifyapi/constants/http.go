@@ -14,6 +14,7 @@ const (
 	URLPathToken               string = "api/token"
 	URLPathMe                  string = "v1/me"
 	URLPathMeFollowing         string = "v1/me/following"
+	URLPathMeTracks            string = "v1/me/tracks"
 	URLPathTrack               string = "v1/tracks"
 	URLPathAlbums              string = "v1/albums"
 	URLPathArtist              string = "v1/artists"
