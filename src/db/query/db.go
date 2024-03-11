@@ -35,6 +35,17 @@ func (p *PostgresDB) insertNoConflict(m interface{}) error {
 	return err
 }
 
+func (p *PostgresDB) deleteByUserID(m interface{}, userID model.ID) (int64, error) {
+	res, err := p.db.NewDelete().
+		Model(m).
+		Where("? = ?", bun.Ident(constants.ColumnUserID), userID).
+		Exec(context.Background())
+
+	rows, _ := res.RowsAffected()
+
+	return rows, err
+}
+
 func (p *PostgresDB) deleteByUserInAndArtistIDNotIn(m interface{}, userID model.ID, artistIDs []model.ID) (int64, error) {
 	res, err := p.db.NewDelete().
 		Model(m).

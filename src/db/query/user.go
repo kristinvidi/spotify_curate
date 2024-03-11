@@ -88,3 +88,14 @@ func (p *PostgresDB) GetMappedArtistsForUserByArtistNames(userID model.ID, artis
 func (p *PostgresDB) InsertUserPlaylistTrackIDMappings(mappings []model.UserPlaylistTrackIDMapping) error {
 	return p.insertWithConflict(&mappings, constants.ColumnUserPlaylistTrackID, constants.OnConflictDoNothing)
 }
+
+func (p *PostgresDB) UpsertUserSavedTracks(userID model.ID, userSavedTracks []model.UserSavedTracks) error {
+	return p.db.RunInTx(context.Background(), nil, func(ctx context.Context, tx bun.Tx) error {
+		_, err := p.deleteByUserID(&[]model.UserSavedTracks{}, userID)
+		if err != nil {
+			return err
+		}
+
+		return p.insertNoConflict(&userSavedTracks)
+	})
+}

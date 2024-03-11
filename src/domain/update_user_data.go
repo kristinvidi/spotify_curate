@@ -33,22 +33,26 @@ func (u *UserUpdater) UpdateUserData() error {
 		return err
 	}
 
-	responses, err := u.userAPI.GetCurrentUsersFollowedArtists()
+	tracksResponses, err := u.userAPI.GetUsersSavedTracks()
+	if err != nil {
+		return err
+	}
+
+	err = u.db.UpsertUserSavedTracks(
+		mapper.IDToDBID(user.ID),
+		mapper.DBUserSavedTracksFromGetUsersSavedTracksResponse(tracksResponses, user.ID),
+	)
+	if err != nil {
+		return err
+	}
+
+	artistsResponses, err := u.userAPI.GetCurrentUsersFollowedArtists()
 	if err != nil {
 		return err
 	}
 
 	// Insert artist data
-	dbArtists := mapper.DBFollowedArtistsFromGetFollowedArtistsResponse(responses)
-
-	found := 0
-	for i, a := range dbArtists {
-		if a.ID == "Barkhan" {
-			found = i
-		}
-	}
-
-	u.logger.Info("found artist?", zap.Int("position", found))
+	dbArtists := mapper.DBFollowedArtistsFromGetFollowedArtistsResponse(artistsResponses)
 
 	err = u.db.InsertArtistData(dbArtists)
 	if err != nil {
@@ -73,14 +77,14 @@ func (u *UserUpdater) UpdateUserData() error {
 
 	// Insert user to artist mapping data
 	err = u.db.InsertUserToArtistIDMappings(
-		mapper.DBUserToArtistMappingFromGetFollowedArtistsResponse(user.ID, responses),
+		mapper.DBUserToArtistMappingFromGetFollowedArtistsResponse(user.ID, artistsResponses),
 	)
 	if err != nil {
 		return err
 	}
 
 	artistIDToAlbumsResponses, err := u.userAPI.GetCurrentUsersFollowedArtistsToAlbums(
-		mapper.APIArtistsFromGetFollowedArtistsResponse(responses),
+		mapper.APIArtistsFromGetFollowedArtistsResponse(artistsResponses),
 	)
 	if err != nil {
 		return err

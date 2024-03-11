@@ -49,3 +49,40 @@ databaseChangeLog:
               - column:
                   name: playlist_spotify_id
                   type: varchar(50)
+  - changeSet:
+      id: adding-user_saved_tracks-table
+      author: kvidi
+      changes:
+        - createTable:
+            tableName: user_saved_tracks
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    autoIncrement: true
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_saved_tracks_id
+              - column:
+                  name: user_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_saved_tracks_user_spotify_id
+                    referencedTableName: spotify_user
+                    referencedColumnNames: spotify_id
+              - column:
+                  name: track_spotify_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: saved_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: unique_user_saved_tracks_user_track_spotify_id_mapping
+            tableName: user_saved_tracks
+            columnNames: user_spotify_id, track_spotify_id

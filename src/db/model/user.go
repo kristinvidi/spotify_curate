@@ -23,3 +23,11 @@ type UserUpdateStatus struct {
 	UserID    ID        `bun:"user_spotify_id,notnull"`
 	UpdatedAt time.Time `bun:",notnull"`
 }
+
+type UserSavedTracks struct {
+	bun.BaseModel `bun:"table:user_saved_tracks"`
+
+	UserID  ID        `bun:"user_spotify_id,notnull"`
+	TrackID ID        `bun:"track_spotify_id,notnull"`
+	SavedAt time.Time `bun:",notnull"`
+}

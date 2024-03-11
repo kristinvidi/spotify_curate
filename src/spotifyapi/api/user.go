@@ -123,3 +123,36 @@ func (u *User) getArtistsAlbumsForArtist(artist model.Artist) ([]*model.GetArtis
 
 	return responses, nil
 }
+
+func (u *User) GetUsersSavedTracks() ([]*model.GetUsersSavedTracksResponse, error) {
+	var responses []*model.GetUsersSavedTracksResponse
+
+	offset := 0
+	total := 1
+	batchSize := 50
+	for offset < total {
+		inputs := model.NewRequestInput(nil, nil, nil, &offset, &batchSize, nil)
+		response, err := u.api.DoRequest(u.userConverter.BuildGetUsersSavedTracksRequest, inputs)
+		if err != nil {
+			return nil, err
+		}
+
+		defer response.Body.Close()
+
+		decodedResponse, err := u.userConverter.DecodeGetUsersSavedTracksResponse(*response)
+		if err != nil {
+			return nil, err
+		}
+
+		// add response to responses
+		responses = append(responses, decodedResponse)
+
+		// increment offset
+		offset += batchSize
+
+		// set total
+		total = decodedResponse.Total
+	}
+
+	return responses, nil
+}
