@@ -108,6 +108,10 @@ func (p *PlaylistCreator) createRecentInGenrePlaylist(user *model.User, genre st
 	}
 
 	tracks := mapper.SimplifiedTracksFromGetAlbumTracksResponses(trackResponses)
+	if len(tracks) == 0 {
+		// log a message saying nothing was generated
+		return nil
+	}
 
 	// Create playlist
 	playlistName := p.playlistNameForRecentInGenre(genre, *lastCreatedDate)
