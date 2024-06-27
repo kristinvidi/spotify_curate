@@ -18,12 +18,15 @@ func SimplifiedTrackFromAPISimplifiedTrack(t api.SimplifiedTrack) model.Simplifi
 func SimplifiedTracksFromGetAlbumTracksResponses(responses []*api.GetAlbumTracksResponse) model.SimplifiedTracks {
 	var tracks model.SimplifiedTracks
 
+	trackMap := make(map[model.ID]struct{})
+
 	for _, r := range responses {
 		if r == nil {
 			continue
 		}
 		for _, t := range r.Tracks {
-			if !trackHasMixed(t) {
+			_, ok := trackMap[model.ID(t.ID)]
+			if !trackHasMixed(t) && !ok {
 				tracks = append(tracks, SimplifiedTrackFromAPISimplifiedTrack(t))
 			}
 		}
