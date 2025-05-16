@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   spotify_db:
     image: postgres:latest
@@ -17,9 +15,9 @@ services:
   liquibase:
     image: liquibase/liquibase:latest
     volumes:
-      - ./changelog:/liquibase/changelog
+      - ./changelogs:/liquibase/changelogs
       - ./liquibase.properties:/liquibase/liquibase.properties
-    command: liquibase --changeLogFile=changelogs/master.yml --url=jdbc:postgresql://localhost:5432/postgres --username=root --password=root update
+    command: liquibase --changeLogFile=changelogs/master.yml --url=jdbc:postgresql://spotify_db:5432/postgres --username=root --password=root update
     depends_on:
       - spotify_db
 

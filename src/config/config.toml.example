@@ -1,0 +1,26 @@
+[app_env]
+env="development"
+
+[app_client_information]
+client_id=[secret]
+client_secret=[secret]
+redirect_uri="http://localhost:8888/callback"
+state="state-string"
+
+[authentication]
+scope="ugc-image-upload user-read-playback-state user-modify-playback-state user-read-currently-playing app-remote-control playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-follow-modify user-follow-read user-read-playback-position user-top-read user-read-recently-played user-library-modify user-library-read user-read-email user-read-private"
+grant_type="authorization_code"
+content_type="application/x-www-form-urlencoded"
+authorization="Basic"
+
+[db]
+database="postgres"
+host="localhost"
+user="root"
+password="root"
+port="5432"
+
+[grpc]
+network="tcp"
+host="localhost"
+port="50051"

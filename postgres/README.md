@@ -1,10 +1,29 @@
 # Postgres Database
 
-## Starting the docker container
-- From the `postgres` directory, run `docker-compose build`.
+## Setting up and running the database
 
-## Applying the schema
-- From the `postgres` directory, run `.\apply_schema.sh`.
+### Initial Setup
+1. Make sure Docker Desktop is running
+    - From the `postgres` directory, run: `docker-compose build`.
+
+### Running the database an applying schema changes
+You have several options to run the database and apply schema changes:
+
+1. Run both database and apply schema changes:
+    - Run `docker-compose up`.
+    - This will start both the Postgres database and run Liquibase migrations.
+
+2. Run only the database (in detached mode):
+   - Run `docker-compose up -d spotify_db`.
+   - Use this when you just need the database running without applying new schema changes.
+
+3. Apply schema changes using the script:
+   - Run `./apply_schema.sh`.
+   - Use this to apply new database migrations after making schema changes.
+
+4. Stop all containers:
+   - Run `docker-compose down`.
+   - Use this when you're done and want to stop the database.
 
 ## Guidelines for naming schema objects
 Examples below are based on the `user_artist_spotify_id_mapping` table.
