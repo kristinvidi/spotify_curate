@@ -10,18 +10,19 @@ import (
 	"src/spotifyapi"
 	"src/spotifyapi/api"
 
+	"go.openly.dev/pointy"
 	"go.uber.org/zap"
 )
 
-type UserUpdater struct {
+type UserManager struct {
 	config  *config.Config
 	userAPI *api.User
 	db      *query.PostgresDB
 	logger  *zap.Logger
 }
 
-func NewUserUpdater(config *config.Config, logger *zap.Logger) *UserUpdater {
-	return &UserUpdater{
+func NewUserManager(config *config.Config, logger *zap.Logger) *UserManager {
+	return &UserManager{
 		config:  config,
 		userAPI: spotifyapi.GetUser(config),
 		db:      query.NewPostgresDB(config.Database),
@@ -29,7 +30,16 @@ func NewUserUpdater(config *config.Config, logger *zap.Logger) *UserUpdater {
 	}
 }
 
-func (u *UserUpdater) UpdateUserData() error {
+func (u *UserManager) AuthenticateUser() (*string, error) {
+	user, err := u.getAndStoreCurrentUserProfile()
+	if err != nil {
+		return nil, err
+	}
+
+	return pointy.String(string(user.ID)), nil
+}
+
+func (u *UserManager) UpdateUserData() error {
 	user, err := u.getAndStoreCurrentUserProfile()
 	if err != nil {
 		return err
@@ -114,7 +124,7 @@ func (u *UserUpdater) UpdateUserData() error {
 	return nil
 }
 
-func (u *UserUpdater) GetUnmappedArtistsForUser() ([]model.Artist, error) {
+func (u *UserManager) GetUnmappedArtistsForUser() ([]model.Artist, error) {
 	user, err := u.getAndStoreCurrentUserProfile()
 	if err != nil {
 		return nil, err
@@ -128,7 +138,7 @@ func (u *UserUpdater) GetUnmappedArtistsForUser() ([]model.Artist, error) {
 	return mapper.ArtistsFromDBArtists(artists), nil
 }
 
-func (u *UserUpdater) CreateArtistToGenreMappingForUser(spotifyUserID string, mappings []model.GenreToArtistsMapping) ([]model.GenreToArtistsMapping, error) {
+func (u *UserManager) CreateArtistToGenreMappingForUser(spotifyUserID string, mappings []model.GenreToArtistsMapping) ([]model.GenreToArtistsMapping, error) {
 	var unfollowedArtists []model.GenreToArtistsMapping
 
 	dbUserID := mapper.StringToDBID(spotifyUserID)
@@ -163,7 +173,7 @@ func (u *UserUpdater) CreateArtistToGenreMappingForUser(spotifyUserID string, ma
 	return unfollowedArtists, nil
 }
 
-func (u *UserUpdater) getUnfollowedArtistNames(artists []model.Artist, artistNames []string) []string {
+func (u *UserManager) getUnfollowedArtistNames(artists []model.Artist, artistNames []string) []string {
 	var unfollowed []string
 	for _, artistName := range artistNames {
 		if !u.artistNameInArtists(artistName, artists) {
@@ -174,7 +184,7 @@ func (u *UserUpdater) getUnfollowedArtistNames(artists []model.Artist, artistNam
 	return unfollowed
 }
 
-func (u *UserUpdater) artistNameInArtists(artistName string, artists []model.Artist) bool {
+func (u *UserManager) artistNameInArtists(artistName string, artists []model.Artist) bool {
 	for _, artist := range artists {
 		if artist.Name == artistName {
 			return true
@@ -184,7 +194,7 @@ func (u *UserUpdater) artistNameInArtists(artistName string, artists []model.Art
 	return false
 }
 
-func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
+func (u *UserManager) getAndStoreCurrentUserProfile() (*model.User, error) {
 	response, err := u.userAPI.GetCurrentUsersProfile()
 	if err != nil {
 		return nil, err
@@ -202,7 +212,7 @@ func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
 	return user, nil
 }
 
-func (u *UserUpdater) CreateLabelsForUser(spotifyUserID string, labels []string) ([]string, error) {
+func (u *UserManager) CreateLabelsForUser(spotifyUserID string, labels []string) ([]string, error) {
 	var failedLabels []string
 	dbUserID := mapper.StringToDBID(spotifyUserID)
 

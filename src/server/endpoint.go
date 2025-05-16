@@ -12,6 +12,7 @@ import (
 type apiEndpoint string
 
 const (
+	API_AUTHENTICATE_USER                   apiEndpoint = "authenticate_user"
 	API_UPDATE_USER_DATA                    apiEndpoint = "update_user_data"
 	API_GET_UNMAPPED_ARTISTS_FOR_USER       apiEndpoint = "get_unmapped_artists_for_user"
 	API_CREATE_PLAYLIST_RECENT_IN_GENRE     apiEndpoint = "create_playlist_recent_in_genre"
@@ -20,11 +21,28 @@ const (
 	API_CREATE_LABELS_FOR_USER              apiEndpoint = "create_labels_for_user"
 )
 
+func (g *GrpcServer) AuthenticateUser(ctx context.Context, request *pb.AuthenticateUserRequest) (*pb.AuthenticateUserResponse, error) {
+	api := API_AUTHENTICATE_USER
+	g.logAPICallStart(api)
+
+	manager := domain.NewUserManager(g.config, g.logger)
+
+	userID, err := manager.AuthenticateUser()
+	if err != nil {
+		g.logError(api, err)
+		return serializer.SerializeAuthenticateUserResponse(false, nil), err
+	}
+
+	g.logAPICallSuccess(api)
+
+	return serializer.SerializeAuthenticateUserResponse(true, userID), nil
+}
+
 func (g *GrpcServer) UpdateUserData(ctx context.Context, request *pb.UpdateUserDataRequest) (*pb.UpdateUserDataResponse, error) {
 	api := API_UPDATE_USER_DATA
 	g.logAPICallStart(api)
 
-	updater := domain.NewUserUpdater(g.config, g.logger)
+	updater := domain.NewUserManager(g.config, g.logger)
 
 	err := updater.UpdateUserData()
 	if err != nil {
@@ -42,7 +60,7 @@ func (g *GrpcServer) GetUnmappedArtistsForUser(ctx context.Context, request *pb.
 	api := API_GET_UNMAPPED_ARTISTS_FOR_USER
 	g.logAPICallStart(api)
 
-	updater := domain.NewUserUpdater(g.config, g.logger)
+	updater := domain.NewUserManager(g.config, g.logger)
 
 	artists, err := updater.GetUnmappedArtistsForUser()
 	if err != nil {
@@ -63,7 +81,7 @@ func (g *GrpcServer) CreateGenreToArtistsMappings(ctx context.Context, request *
 	userID := request.GetUserSpotifyId()
 	mappings := serializer.DeserializeCreateGenreToArtistsMappingsRequest(request)
 
-	updater := domain.NewUserUpdater(g.config, g.logger)
+	updater := domain.NewUserManager(g.config, g.logger)
 
 	unfollowedArtists, err := updater.CreateArtistToGenreMappingForUser(userID, mappings)
 	if err != nil {
@@ -129,7 +147,7 @@ func (g *GrpcServer) CreateLabelsForUser(ctx context.Context, request *pb.Create
 	userID := request.GetUserSpotifyId()
 	labels := request.GetLabels()
 
-	updater := domain.NewUserUpdater(g.config, g.logger)
+	updater := domain.NewUserManager(g.config, g.logger)
 
 	failedLabels, err := updater.CreateLabelsForUser(userID, labels)
 	if err != nil {

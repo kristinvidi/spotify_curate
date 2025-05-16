@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v5.29.3
-// source: spotify_curate.proto
+// source: proto/spotify_curate.proto
 
 package proto
 
@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	SpotifyCurate_AuthenticateUser_FullMethodName               = "/proto.SpotifyCurate/AuthenticateUser"
 	SpotifyCurate_UpdateUserData_FullMethodName                 = "/proto.SpotifyCurate/UpdateUserData"
 	SpotifyCurate_CreatePlaylistRecentInGenre_FullMethodName    = "/proto.SpotifyCurate/CreatePlaylistRecentInGenre"
 	SpotifyCurate_CreatePlaylistRecentInGenreAll_FullMethodName = "/proto.SpotifyCurate/CreatePlaylistRecentInGenreAll"
@@ -31,6 +32,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SpotifyCurateClient interface {
+	AuthenticateUser(ctx context.Context, in *AuthenticateUserRequest, opts ...grpc.CallOption) (*AuthenticateUserResponse, error)
 	UpdateUserData(ctx context.Context, in *UpdateUserDataRequest, opts ...grpc.CallOption) (*UpdateUserDataResponse, error)
 	CreatePlaylistRecentInGenre(ctx context.Context, in *CreatePlaylistRecentInGenreRequest, opts ...grpc.CallOption) (*CreatePlaylistRecentInGenreResponse, error)
 	CreatePlaylistRecentInGenreAll(ctx context.Context, in *CreatePlaylistRecentInGenreAllRequest, opts ...grpc.CallOption) (*CreatePlaylistRecentInGenreAllResponse, error)
@@ -45,6 +47,15 @@ type spotifyCurateClient struct {
 
 func NewSpotifyCurateClient(cc grpc.ClientConnInterface) SpotifyCurateClient {
 	return &spotifyCurateClient{cc}
+}
+
+func (c *spotifyCurateClient) AuthenticateUser(ctx context.Context, in *AuthenticateUserRequest, opts ...grpc.CallOption) (*AuthenticateUserResponse, error) {
+	out := new(AuthenticateUserResponse)
+	err := c.cc.Invoke(ctx, SpotifyCurate_AuthenticateUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *spotifyCurateClient) UpdateUserData(ctx context.Context, in *UpdateUserDataRequest, opts ...grpc.CallOption) (*UpdateUserDataResponse, error) {
@@ -105,6 +116,7 @@ func (c *spotifyCurateClient) CreateLabelsForUser(ctx context.Context, in *Creat
 // All implementations must embed UnimplementedSpotifyCurateServer
 // for forward compatibility
 type SpotifyCurateServer interface {
+	AuthenticateUser(context.Context, *AuthenticateUserRequest) (*AuthenticateUserResponse, error)
 	UpdateUserData(context.Context, *UpdateUserDataRequest) (*UpdateUserDataResponse, error)
 	CreatePlaylistRecentInGenre(context.Context, *CreatePlaylistRecentInGenreRequest) (*CreatePlaylistRecentInGenreResponse, error)
 	CreatePlaylistRecentInGenreAll(context.Context, *CreatePlaylistRecentInGenreAllRequest) (*CreatePlaylistRecentInGenreAllResponse, error)
@@ -118,6 +130,9 @@ type SpotifyCurateServer interface {
 type UnimplementedSpotifyCurateServer struct {
 }
 
+func (UnimplementedSpotifyCurateServer) AuthenticateUser(context.Context, *AuthenticateUserRequest) (*AuthenticateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthenticateUser not implemented")
+}
 func (UnimplementedSpotifyCurateServer) UpdateUserData(context.Context, *UpdateUserDataRequest) (*UpdateUserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserData not implemented")
 }
@@ -147,6 +162,24 @@ type UnsafeSpotifyCurateServer interface {
 
 func RegisterSpotifyCurateServer(s grpc.ServiceRegistrar, srv SpotifyCurateServer) {
 	s.RegisterService(&SpotifyCurate_ServiceDesc, srv)
+}
+
+func _SpotifyCurate_AuthenticateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpotifyCurateServer).AuthenticateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpotifyCurate_AuthenticateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpotifyCurateServer).AuthenticateUser(ctx, req.(*AuthenticateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _SpotifyCurate_UpdateUserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -265,6 +298,10 @@ var SpotifyCurate_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SpotifyCurateServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "AuthenticateUser",
+			Handler:    _SpotifyCurate_AuthenticateUser_Handler,
+		},
+		{
 			MethodName: "UpdateUserData",
 			Handler:    _SpotifyCurate_UpdateUserData_Handler,
 		},
@@ -290,5 +327,5 @@ var SpotifyCurate_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "spotify_curate.proto",
+	Metadata: "proto/spotify_curate.proto",
 }
