@@ -15,3 +15,9 @@
 
 // Schema roll-back
 rollback_schema.sh
+
+// TLS Certificates
+src/server/certs/
+*.key
+*.crt
+*.pem

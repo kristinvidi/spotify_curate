@@ -24,3 +24,8 @@ port="5432"
 network="tcp"
 host="localhost"
 port="50051"
+use_tls=false  # Set to true to enable TLS
+
+[grpc.tls]
+cert_file="server/certs/server.crt"  # Path to TLS certificate file
+key_file="server/certs/server.key"   # Path to TLS private key file

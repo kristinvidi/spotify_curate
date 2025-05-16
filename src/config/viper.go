@@ -32,10 +32,17 @@ type DB struct {
 	Port     string `mapstructure:"port"`
 }
 
+type GRPCTls struct {
+	CertFile string `mapstructure:"cert_file"`
+	KeyFile  string `mapstructure:"key_file"`
+}
+
 type GRPC struct {
-	Network string `mapstructure:"network"`
-	Host    string `mapstructure:"host"`
-	Port    int    `mapstructure:"port"`
+	Network string  `mapstructure:"network"`
+	Host    string  `mapstructure:"host"`
+	Port    int     `mapstructure:"port"`
+	UseTLS  bool    `mapstructure:"use_tls"`
+	TLS     GRPCTls `mapstructure:"tls"`
 }
 
 type Config struct {

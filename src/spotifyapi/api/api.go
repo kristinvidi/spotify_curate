@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -123,42 +124,55 @@ func (a *API) executeAuthorizationWorkflow() error {
 func (a *API) requestAuthorizationCode() (*string, error) {
 	authorizeURL := convert.BuildAuthorizeURL(a.config.Authentication.Scope, a.config.AppClientInfo.ClientID, a.config.AppClientInfo.RedirectURI, a.config.AppClientInfo.State)
 
-	// HTTP HANDLER HERE TO CAPTURE THE CALLBACK CODE
-	var authorizationCode *string
-	var serverErr error
+	// Create channels for coordination
+	codeChan := make(chan *string)
+	errChan := make(chan error)
 
 	// Create a new server and set the handler
 	server := http.Server{Addr: ":8888"}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Get authorization code from callback URL
-		authorizationCode, serverErr = convert.AuthorizationCodeFromCallbackURL(r.URL.RawQuery, a.config.AppClientInfo.State)
+		code, err := convert.AuthorizationCodeFromCallbackURL(r.URL.RawQuery, a.config.AppClientInfo.State)
+		if err != nil {
+			errChan <- err
+			return
+		}
 
 		// Send a response to the user
 		w.Write([]byte("Authorization complete. You can now close this window."))
 
+		// Send the code through the channel
+		codeChan <- code
+
 		// Shut down the server
-		server.Shutdown(context.Background())
+		go func() {
+			if err := server.Shutdown(context.Background()); err != nil {
+				errChan <- err
+			}
+		}()
 	})
 
-	// Start the server
-	go server.ListenAndServe()
+	// Start the server in a goroutine
+	go func() {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			errChan <- err
+		}
+	}()
 
 	// Open the browser to prompt user to login
-	err := browser.OpenURL(authorizeURL)
-	if err != nil {
+	if err := browser.OpenURL(authorizeURL); err != nil {
 		return nil, err
 	}
 
-	// We need a lil delay to let the program catch up with itself
-	time.Sleep(6 * time.Second)
-
-	// Wait for the server to shut down
-	serverErr = server.ListenAndServe()
-	if serverErr != nil && serverErr != http.ErrServerClosed {
-		return nil, serverErr
+	// Wait for either the code or an error
+	select {
+	case code := <-codeChan:
+		return code, nil
+	case err := <-errChan:
+		return nil, err
+	case <-time.After(60 * time.Second):
+		return nil, fmt.Errorf("timeout waiting for authorization code")
 	}
-
-	return authorizationCode, nil
 }
 
 func (a *API) requestAccessToken(authorizationCode string) (*model.AccessToken, error) {
