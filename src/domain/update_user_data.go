@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"strings"
+
 	"src/config"
 	"src/db/query"
 	"src/domain/mapper"
@@ -198,4 +200,21 @@ func (u *UserUpdater) getAndStoreCurrentUserProfile() (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *UserUpdater) CreateLabelsForUser(spotifyUserID string, labels []string) ([]string, error) {
+	var failedLabels []string
+	dbUserID := mapper.StringToDBID(spotifyUserID)
+
+	mapping := mapper.DBUserIDGenreMappingFromUserIDAndLabel(dbUserID, labels)
+
+	err := u.db.InsertUserIDGenreMappings(mapping)
+	if err != nil {
+		u.logger.Error("failed to create labels for user",
+			zap.String("user_id", spotifyUserID),
+			zap.String("labels", strings.Join(labels, ", ")),
+			zap.Error(err))
+	}
+
+	return failedLabels, err
 }

@@ -17,6 +17,7 @@ const (
 	API_CREATE_PLAYLIST_RECENT_IN_GENRE     apiEndpoint = "create_playlist_recent_in_genre"
 	API_CREATE_PLAYLIST_RECENT_IN_GENRE_ALL apiEndpoint = "create_playlist_recent_in_genre_all"
 	API_CREATE_ARTIST_GENRE_MAPPING         apiEndpoint = "create_artist_genre_mapping"
+	API_CREATE_LABELS_FOR_USER              apiEndpoint = "create_labels_for_user"
 )
 
 func (g *GrpcServer) UpdateUserData(ctx context.Context, request *pb.UpdateUserDataRequest) (*pb.UpdateUserDataResponse, error) {
@@ -119,4 +120,24 @@ func (g *GrpcServer) CreatePlaylistRecentInGenreAll(ctx context.Context, request
 	g.logAPICallSuccess(api)
 
 	return serializer.SerializeCreatePlaylistRecentInGenreAllResponse(true), nil
+}
+
+func (g *GrpcServer) CreateLabelsForUser(ctx context.Context, request *pb.CreateLabelsForUserRequest) (*pb.CreateLabelsForUserResponse, error) {
+	api := API_CREATE_LABELS_FOR_USER
+	g.logAPICallStart(api)
+
+	userID := request.GetUserSpotifyId()
+	labels := request.GetLabels()
+
+	updater := domain.NewUserUpdater(g.config, g.logger)
+
+	failedLabels, err := updater.CreateLabelsForUser(userID, labels)
+	if err != nil {
+		g.logError(api, err)
+		return serializer.SerializeCreateLabelsForUserResponse(false, failedLabels), err
+	}
+
+	g.logAPICallSuccess(api)
+
+	return serializer.SerializeCreateLabelsForUserResponse(true, failedLabels), nil
 }

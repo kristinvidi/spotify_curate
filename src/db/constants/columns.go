@@ -14,6 +14,7 @@ const (
 	ColumnUserTrackID         Column = "user_spotify_id, track_spotify_id"
 	ColumnDisplayName         Column = "display_name"
 	ColumnGenre               Column = "genre"
+	ColumnUserGenreID         Column = "user_spotify_id, genre"
 )
 
 func (c Column) String() string {
