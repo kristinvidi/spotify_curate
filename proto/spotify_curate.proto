@@ -9,6 +9,7 @@ package proto;
 option go_package = "github.com/kristinvidi/spotify_curate/proto";
 
 service SpotifyCurate {
+    rpc AuthenticateUser (AuthenticateUserRequest) returns (AuthenticateUserResponse) {}
     rpc UpdateUserData (UpdateUserDataRequest) returns (UpdateUserDataResponse) {}
     rpc CreatePlaylistRecentInGenre (CreatePlaylistRecentInGenreRequest) returns (CreatePlaylistRecentInGenreResponse) {}
     rpc CreatePlaylistRecentInGenreAll (CreatePlaylistRecentInGenreAllRequest) returns (CreatePlaylistRecentInGenreAllResponse) {}
@@ -20,6 +21,13 @@ service SpotifyCurate {
 message General {
     bool success = 1;
     string failure_details = 2;
+}
+
+message AuthenticateUserRequest {}
+
+message AuthenticateUserResponse {
+    string user_spotify_id = 1;
+    General general = 2;
 }
 
 message UpdateUserDataRequest {}
