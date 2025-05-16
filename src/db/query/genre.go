@@ -71,3 +71,7 @@ func (p *PostgresDB) InsertUserArtistIDGenreMappings(mappings model.UserArtistID
 
 	return p.insertWithConflict(&mappings, constants.ColumnUserArtistGenreID, constants.OnConflictDoNothing)
 }
+
+func (p *PostgresDB) InsertUserIDGenreMappings(mappings []model.UserIDGenreMapping) error {
+	return p.insertWithConflict(&mappings, constants.ColumnUserGenreID, constants.OnConflictDoNothing)
+}

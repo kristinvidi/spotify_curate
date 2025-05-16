@@ -17,15 +17,22 @@ Welcome to my Spotify playlist curating app - Curate!
 - Install [Homebrew](https://docs.brew.sh/Installation).
 - Install [Docker Desktop](https://www.docker.com/get-started/).
 - Install [Postman](https://www.postman.com/downloads/).
+- Install [DBeaver](https://dbeaver.io/download/).
 
 ### Service Setup
 1. **Database**: See the README in the `postgres` directory for database setup instructions.
 2. **Backend**: See the README in the `src` directory for backend application setup.
-3. 
 
 ### Running the App
-- Ensure Docker is running and the `spotify_db` container is running. If not, check the Database setup above.
-- Run the gRPC server:
+- Ensure Docker is running and the `spotify_db` container is running. If not, check the `Database` setup above.
+- Run the gRPC server per below. See `Backend` instructions below if required for Postman setup.
     - `cd src`
     - `go run main.go`
-- Start up Postman.
+- Interact with Postman! To get started you will want to:
+    - Run the `AuthenticateUser` endpoint to authenticate with Spotify and get your UserID.
+    - Run the `UpdateUserData` endpoint.
+    - Take note of your Spotify User ID when it returns.
+    - Create your labels using the `CreateLabelsForUser` endpoint. You will need your User ID here.
+    - Run the `GetUnmappedArtistsForUser` endpoint to view which artists need to be associated to labels.
+    - Associate your followed artists to labels using the `CreateGenreToArtistMappings` endpoint.
+    - *Remember that you can click on `Use Example Message` in the Postman console to view the structure of the API request.*

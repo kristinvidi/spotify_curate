@@ -14,6 +14,7 @@ service SpotifyCurate {
     rpc CreatePlaylistRecentInGenreAll (CreatePlaylistRecentInGenreAllRequest) returns (CreatePlaylistRecentInGenreAllResponse) {}
     rpc GetUnmappedArtistsForUser (GetUnmappedArtistsForUserRequest) returns (GetUnmappedArtistsForUserResponse) {}
     rpc CreateGenreToArtistsMappings (CreateGenreToArtistsMappingsRequest) returns (CreateGenreToArtistsMappingsResponse) {}
+    rpc CreateLabelsForUser (CreateLabelsForUserRequest) returns (CreateLabelsForUserResponse) {}
 }
 
 message General {
@@ -68,4 +69,14 @@ message GenreToArtistsMapping {
 message CreateGenreToArtistsMappingsResponse {
     General general = 1;
     repeated GenreToArtistsMapping failed_genre_to_artists_mappings = 2;
+}
+
+message CreateLabelsForUserRequest {
+    string user_spotify_id = 1;
+    repeated string labels = 2;
+}
+
+message CreateLabelsForUserResponse {
+    General general = 1;
+    repeated string failed_labels = 2;
 }
