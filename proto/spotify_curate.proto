@@ -50,7 +50,9 @@ message CreatePlaylistRecentInGenreAllResponse {
     General general = 1;
 }
 
-message GetUnmappedArtistsForUserRequest {}
+message GetUnmappedArtistsForUserRequest {
+    string user_spotify_id = 1;
+}
 
 message GetUnmappedArtistsForUserResponse {
     General general = 1;

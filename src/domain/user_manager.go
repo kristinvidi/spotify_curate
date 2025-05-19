@@ -124,13 +124,10 @@ func (u *UserManager) UpdateUserData() error {
 	return nil
 }
 
-func (u *UserManager) GetUnmappedArtistsForUser() ([]model.Artist, error) {
-	user, err := u.getAndStoreCurrentUserProfile()
-	if err != nil {
-		return nil, err
-	}
+func (u *UserManager) GetUnmappedArtistsForUser(spotifyUserID string) ([]model.Artist, error) {
+	dbUserID := mapper.StringToDBID(spotifyUserID)
 
-	artists, err := u.db.GetUnmappedArtistsForUser(mapper.IDToDBID(user.ID))
+	artists, err := u.db.GetUnmappedArtistsForUser(dbUserID)
 	if err != nil {
 		return nil, err
 	}

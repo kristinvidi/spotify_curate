@@ -60,9 +60,10 @@ func (g *GrpcServer) GetUnmappedArtistsForUser(ctx context.Context, request *pb.
 	api := API_GET_UNMAPPED_ARTISTS_FOR_USER
 	g.logAPICallStart(api)
 
+	userID := request.GetUserSpotifyId()
 	updater := domain.NewUserManager(g.config, g.logger)
 
-	artists, err := updater.GetUnmappedArtistsForUser()
+	artists, err := updater.GetUnmappedArtistsForUser(userID)
 	if err != nil {
 		g.logError(api, err)
 
