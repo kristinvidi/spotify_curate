@@ -19,6 +19,7 @@ const (
 	API_CREATE_PLAYLIST_RECENT_IN_GENRE_ALL apiEndpoint = "create_playlist_recent_in_genre_all"
 	API_CREATE_ARTIST_GENRE_MAPPING         apiEndpoint = "create_artist_genre_mapping"
 	API_CREATE_LABELS_FOR_USER              apiEndpoint = "create_labels_for_user"
+	API_GET_ARTIST_TAGS_FOR_USER            apiEndpoint = "get_artist_tags_for_user"
 )
 
 func (g *GrpcServer) AuthenticateUser(ctx context.Context, request *pb.AuthenticateUserRequest) (*pb.AuthenticateUserResponse, error) {
@@ -159,4 +160,22 @@ func (g *GrpcServer) CreateLabelsForUser(ctx context.Context, request *pb.Create
 	g.logAPICallSuccess(api)
 
 	return serializer.SerializeCreateLabelsForUserResponse(true, failedLabels), nil
+}
+
+func (g *GrpcServer) GetArtistTagsForUser(ctx context.Context, request *pb.GetArtistTagsForUserRequest) (*pb.GetArtistTagsForUserResponse, error) {
+	api := API_GET_ARTIST_TAGS_FOR_USER
+	g.logAPICallStart(api)
+
+	userID := request.GetUserSpotifyId()
+	manager := domain.NewUserManager(g.config, g.logger)
+
+	tags, err := manager.GetArtistTagsForUser(userID)
+	if err != nil {
+		g.logError(api, err)
+		return serializer.SerializeGetArtistTagsForUserResponse(false, nil), err
+	}
+
+	g.logAPICallSuccess(api)
+
+	return serializer.SerializeGetArtistTagsForUserResponse(true, tags), nil
 }

@@ -3,8 +3,9 @@
 Welcome to my Spotify playlist curating app - Curate!
 
 ## Features
-- Labeling: Categorize your artists by genre.
-- Recent in Genre: Configure regularly generating playlists containing your followed artists' new albums.
+- **Frontend UI**: A premium dark-mode web application to manage your library.
+- **Labeling**: Categorize your artists by "Artist Tags" (Genres).
+- **Recent in Genre**: Configure regularly generating playlists containing your followed artists' new albums.
 
 ## Upcoming Features
 - Hidden gems: Surface your favourite artists' lesser-known music.
@@ -13,26 +14,41 @@ Welcome to my Spotify playlist curating app - Curate!
 
 ## Setup Instructions
 
-### Prerequisites (Mac Only)
+### Prerequisites
 - Install [Homebrew](https://docs.brew.sh/Installation).
 - Install [Docker Desktop](https://www.docker.com/get-started/).
-- Install [Postman](https://www.postman.com/downloads/).
-- Install [DBeaver](https://dbeaver.io/download/).
+- Install [Go](https://go.dev/doc/install) (for backend).
+- Install [Node.js](https://nodejs.org/en/download/) (for frontend).
+- Install [DBeaver](https://dbeaver.io/download/) (optional, for DB inspection).
 
 ### Service Setup
 1. **Database**: See the README in the `postgres` directory for database setup instructions.
 2. **Backend**: See the README in the `src` directory for backend application setup.
+3. **Frontend**: The frontend is located in the `web` directory. Run `npm install` in `web` to install dependencies.
 
 ### Running the App
-- Ensure Docker is running and the `spotify_db` container is running. If not, check the `Database` setup above.
-- Run the gRPC server per below. See `Backend` instructions below if required for Postman setup.
-    - `cd src`
-    - `go run main.go`
-- Interact with Postman! To get started you will want to:
-    - Run the `AuthenticateUser` endpoint to authenticate with Spotify and get your UserID.
-    - Run the `UpdateUserData` endpoint.
-    - Take note of your Spotify User ID when it returns.
-    - Create your labels using the `CreateLabelsForUser` endpoint. You will need your User ID here.
-    - Run the `GetUnmappedArtistsForUser` endpoint to view which artists need to be associated to labels.
-    - Associate your followed artists to labels using the `CreateGenreToArtistMappings` endpoint.
-    - *Remember that you can click on `Use Example Message` in the Postman console to view the structure of the API request.*
+
+We use a `Makefile` to simplify running the application.
+
+- **Start All Services**:
+    ```bash
+    make run
+    ```
+    This starts both the backend (gRPC server) and frontend (Next.js) concurrently. Open [http://localhost:3000](http://localhost:3000) to use the app.
+
+- **Stop All Services**:
+    ```bash
+    make stop
+    ```
+
+- **Generate Proton Files**:
+    ```bash
+    make proto
+    ```
+    Regenerates Go protobuf files and copies the definition to the frontend.
+
+### Manual Usage (Legacy)
+If you prefer running services manually or using Postman:
+- Ensure Docker is running and the `spotify_db` container is running.
+- **Backend**: `cd src && go run main.go`
+- **Frontend**: `cd web && npm run dev`
