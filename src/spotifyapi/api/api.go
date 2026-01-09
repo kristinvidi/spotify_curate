@@ -128,9 +128,12 @@ func (a *API) requestAuthorizationCode() (*string, error) {
 	codeChan := make(chan *string)
 	errChan := make(chan error)
 
-	// Create a new server and set the handler
-	server := http.Server{Addr: ":8888"}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// Create a new server and set the handler. Use a dedicated ServeMux so repeated
+	// auth attempts don't register handlers on the global DefaultServeMux (which
+	// can panic with "http: multiple registrations for /").
+	mux := http.NewServeMux()
+	server := http.Server{Addr: ":8888", Handler: mux}
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Get authorization code from callback URL
 		code, err := convert.AuthorizationCodeFromCallbackURL(r.URL.RawQuery, a.config.AppClientInfo.State)
 		if err != nil {
