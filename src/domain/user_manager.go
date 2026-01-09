@@ -225,3 +225,24 @@ func (u *UserManager) CreateLabelsForUser(spotifyUserID string, labels []string)
 
 	return failedLabels, err
 }
+
+func (u *UserManager) GetArtistTagsForUser(spotifyUserID string) ([]string, error) {
+	dbUserID := mapper.StringToDBID(spotifyUserID)
+
+	mappings, err := u.db.GetGenreMappingsForUser(dbUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var tags []string
+	seen := make(map[string]bool)
+	for _, mapping := range mappings {
+		tag := string(mapping.Genre)
+		if !seen[tag] {
+			tags = append(tags, tag)
+			seen[tag] = true
+		}
+	}
+
+	return tags, nil
+}
