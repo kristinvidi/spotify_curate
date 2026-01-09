@@ -22,7 +22,11 @@ func main() {
 	defer logger.Sync()
 
 	// Set up and start server
-	grpcServer := server.NewGrpcServer(config, logger)
+	grpcServer, err := server.NewGrpcServer(config, logger)
+	if err != nil {
+		panic(err)
+	}
+
 	if err := grpcServer.Run(); err != nil {
 		panic(err)
 	}

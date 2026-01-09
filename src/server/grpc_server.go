@@ -26,14 +26,13 @@ type GrpcServer struct {
 	logger *zap.Logger
 }
 
-func NewGrpcServer(config *config.Config, logger *zap.Logger) *GrpcServer {
+func NewGrpcServer(config *config.Config, logger *zap.Logger) (*GrpcServer, error) {
 	var opts []grpc.ServerOption
 
 	if config.GRPC.UseTLS {
 		creds, err := credentials.NewServerTLSFromFile(config.GRPC.TLS.CertFile, config.GRPC.TLS.KeyFile)
 		if err != nil {
-			logger.Error("Failed to load TLS credentials", zap.Error(err))
-			return nil
+			return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
 		}
 		opts = append(opts, grpc.Creds(creds))
 		logger.Info("TLS enabled for gRPC server")
@@ -45,7 +44,7 @@ func NewGrpcServer(config *config.Config, logger *zap.Logger) *GrpcServer {
 		server: grpc.NewServer(opts...),
 		config: config,
 		logger: logger,
-	}
+	}, nil
 }
 
 func (g *GrpcServer) logAPICallStart(apiEndpoint apiEndpoint) {
